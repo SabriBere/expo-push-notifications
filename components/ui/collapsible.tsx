@@ -1,11 +1,8 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import * as Notifications from 'expo-notifications';
 import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, Text } from 'react-native';
+import { ThemedView } from '@/components/themed-view';
+import * as Notifications from 'expo-notifications';
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -16,48 +13,77 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
+export function Collapsible() {
 
-  console.log('sección Explore?')
+  async function triggerPushNotifications({ children, title }: PropsWithChildren & { title: string }) {
 
-  async function triggerPushNotifications() {
-    //Configurar canal (iOS)
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== "granted") return;
+    try {
+      //Configurar canal (iOS)
+      const settings = await Notifications.requestPermissionsAsync();
+      // console.log(settings, 'qué devuelve en settings')
+      if (settings.status !== "granted") return;
 
+      if (settings.status !== 'granted') {
+        const request = await Notifications.requestPermissionsAsync();
+        settings.status = request.status;
+      }
+
+      if (settings.status !== 'granted') {
+        Alert.alert('Permisos requeridos', 'No se otorgaron permisos para notificaciones.');
+        return;
+      }
+
+      //Solo necesario para Android
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+        });
+      }
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Notificación de prueba',
+          body: 'Esta es una alerta local en iOS 🚀',
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 2,
+        },
+      });
+
+
+    } catch (error) {
+        console.error('Error al disparar notificación:', error);
+        Alert.alert('Error', 'No se pudo disparar la notificación.');//Aca mostrar un toast
+    }
   }
 
   return (
-    <ThemedView>
-      <TouchableOpacity
-        style={styles.heading}
-        onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-        <IconSymbol
-          name="chevron.right"
-          size={18}
-          weight="medium"
-          color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
-        />
-
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
-      </TouchableOpacity>
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
+    <ThemedView style={styles.container}>
+      <Pressable style={styles.button} onPress={triggerPushNotifications}>
+        <Text style={styles.text}>Test notificación iOS</Text>
+      </Pressable>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    flexDirection: 'row',
+  container: {
+    padding: 16,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
   },
-  content: {
-    marginTop: 6,
-    marginLeft: 24,
+  button: {
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+  },
+  text: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
