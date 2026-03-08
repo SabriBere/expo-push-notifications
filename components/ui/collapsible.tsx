@@ -1,7 +1,6 @@
-import { PropsWithChildren, useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import * as Notifications from 'expo-notifications';
+import { Alert, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 
 Notifications.setNotificationHandler({
@@ -15,12 +14,13 @@ Notifications.setNotificationHandler({
 
 export function Collapsible() {
 
-  async function triggerPushNotifications({ children, title }: PropsWithChildren & { title: string }) {
+  //Configuración de notificaciones
+  async function triggerPushNotifications() {
 
     try {
       //Configurar canal (iOS)
       const settings = await Notifications.requestPermissionsAsync();
-      // console.log(settings, 'qué devuelve en settings')
+      console.log(settings, 'qué devuelve en settings')
       if (settings.status !== "granted") return;
 
       if (settings.status !== 'granted') {
@@ -43,27 +43,34 @@ export function Collapsible() {
 
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Notificación de prueba',
-          body: 'Esta es una alerta local en iOS 🚀',
+          title: "Praetorian",
+          subtitle: "Noticias",
+          body: 'Esta es una alerta local en iOS/Android 🚀',
           sound: true,
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 2,
+          seconds: Platform.OS === "ios"? 0 : 1,
         },
       });
 
 
     } catch (error) {
         console.error('Error al disparar notificación:', error);
-        Alert.alert('Error', 'No se pudo disparar la notificación.');//Aca mostrar un toast
+        Alert.alert('Error', 'No se pudo disparar la notificación.');
     }
   }
 
+  //Desuscripción manual de notificaciones desde UI
+  async function triggerForgotPermissions() {}
+
   return (
     <ThemedView style={styles.container}>
-      <Pressable style={styles.button} onPress={triggerPushNotifications}>
-        <Text style={styles.text}>Test notificación iOS</Text>
+      <Pressable style={styles.button} onPress={() => triggerPushNotifications()}>
+        <Text style={styles.text}>Test notificación iOS/android</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={() => triggerForgotPermissions()}>
+        <Text style={styles.text}>Test olvidar permisos</Text>
       </Pressable>
     </ThemedView>
   );
