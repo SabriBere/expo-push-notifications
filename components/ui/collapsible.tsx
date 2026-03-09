@@ -1,6 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import * as Notifications from 'expo-notifications';
-import { Alert, Platform, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, Linking, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 
 Notifications.setNotificationHandler({
@@ -21,16 +21,32 @@ export function Collapsible() {
       //Configurar canal (iOS)
       const settings = await Notifications.requestPermissionsAsync();
       console.log(settings, 'qué devuelve en settings')
-      if (settings.status !== "granted") return;
+      // if (settings.status !== "granted") return;
 
-      if (settings.status !== 'granted') {
-        const request = await Notifications.requestPermissionsAsync();
-        settings.status = request.status;
-      }
+      // if (settings.status !== 'granted') {
+      //   const request = await Notifications.requestPermissionsAsync();
+      //   settings.status = request.status;
+      // }
 
-      if (settings.status !== 'granted') {
-        Alert.alert('Permisos requeridos', 'No se otorgaron permisos para notificaciones.');
-        return;
+      // if (settings.status !== 'granted') {
+      //   Alert.alert('Permisos requeridos', 'No se otorgaron permisos para notificaciones.');
+      //   return;
+      // }
+
+      //Si las desactivo y las quiere volver a activar
+      if (!settings.canAskAgain) {
+          Alert.alert(
+            "Notificaciones desactivadas",
+            "Debes habilitarlas desde la configuración",
+            [
+              {
+                text: "Abrir Configuración",
+                onPress: () => Linking.openSettings()
+              }
+            ]
+          );
+      } else {
+          await Notifications.requestPermissionsAsync();
       }
 
       //Solo necesario para Android
@@ -63,15 +79,29 @@ export function Collapsible() {
     }
   }
 
-  //Desuscripción manual de notificaciones desde UI
-  async function triggerForgotPermissions() {}
+  //Desuscripción notificaciones de settings o ajustes - Guia al usuario.
+  async function triggerSettingsPermissions() {
+    // console.log('ingresa aca?')
+    //Lleva al usuario a los settings
+    Alert.alert(
+    "Notificaciones",
+    "Para desactivar las notificaciones debes hacerlo desde la configuración del sistema.",
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Abrir configuración",
+        onPress: () => Linking.openSettings(),
+      },
+    ]
+  );
+  }
 
   return (
     <ThemedView style={styles.container}>
       <Pressable style={styles.button} onPress={() => triggerPushNotifications()}>
         <Text style={styles.text}>Test notificación iOS/android</Text>
       </Pressable>
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={() => triggerSettingsPermissions()}>
         <Text style={styles.text}>Test olvidar permisos</Text>
       </Pressable>
     </ThemedView>
