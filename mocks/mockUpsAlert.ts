@@ -16,15 +16,15 @@ export const notificationList = [
 export const notificationsHistory = [
     //Noticia de impresos
     {
-        Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
+        Title: "Gradualismo: las ideas de Tal vi, el nuevo asesor de Luis Caputo",
         Tier: 1,
         Tone: 1,
         MediaType: 4,
-        Media: "Automagazine (Online)",
-        Section: "Deportes",
-        Link: "https://globalne.ws/v2aETwbSAy5pkI0wLhM39mAV8UawofctvsXHKJ3V-pE",
+        Media: "El Cronista",
+        Section: " Economía y Política",
+        Link: "",
         consultasId: 5441,
-        noticiaId: 674671645
+        noticiaId: 677374571
     },
     //Noticia de Online
     {
@@ -40,26 +40,26 @@ export const notificationsHistory = [
     },
     //Noticia de Radio
     {
-        Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
+        Title: "Pase entre programas",
         Tier: 1,
         Tone: 1,
         MediaType: 4,
-        Media: "Automagazine (Online)",
-        Section: "Deportes",
+        Media: "Rivadavia",
+        Section: "Vamos Rivadavia",
         Link: "",
-        consultasId: 5442,
-        noticiaId: 674671645
+        consultasId: 5443,
+        noticiaId: 16879521
     },
-    //Noticia
+    //Noticia de TV
     {
-        Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
+        Title: "Las vacantes en la Justicia",
         Tier: 1,
         Tone: 1,
         MediaType: 4,
-        Media: "Automagazine (Online)",
-        Section: "Deportes",
+        Media: "América TV",
+        Section: "Arriba América",
         Link: "",
-        consultasId: 5442,
-        noticiaId: 674671645
+        consultasId: 5444,
+        noticiaId: 16878508
     },
 ]
