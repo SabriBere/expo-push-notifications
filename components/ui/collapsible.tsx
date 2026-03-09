@@ -21,20 +21,10 @@ export function Collapsible() {
       //Configurar canal (iOS)
       const settings = await Notifications.requestPermissionsAsync();
       console.log(settings, 'qué devuelve en settings')
-      // if (settings.status !== "granted") return;
-
-      // if (settings.status !== 'granted') {
-      //   const request = await Notifications.requestPermissionsAsync();
-      //   settings.status = request.status;
-      // }
-
-      // if (settings.status !== 'granted') {
-      //   Alert.alert('Permisos requeridos', 'No se otorgaron permisos para notificaciones.');
-      //   return;
-      // }
 
       //Si las desactivo y las quiere volver a activar
-      if (!settings.canAskAgain) {
+      if (!settings.granted) {
+          if (!settings.canAskAgain) {
           Alert.alert(
             "Notificaciones desactivadas",
             "Debes habilitarlas desde la configuración",
@@ -45,9 +35,11 @@ export function Collapsible() {
               }
             ]
           );
-      } else {
-          await Notifications.requestPermissionsAsync();
+        } else {
+              await Notifications.requestPermissionsAsync();
+        }
       }
+
 
       //Solo necesario para Android
       if (Platform.OS === 'android') {
