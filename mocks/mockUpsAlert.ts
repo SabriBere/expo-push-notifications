@@ -14,18 +14,6 @@ export const notificationList = [
 
 //Mockup para mapear
 export const notificationsHistory = [
-    //Noticia de impresos
-    {
-        Title: "Gradualismo: las ideas de Tal vi, el nuevo asesor de Luis Caputo",
-        Tier: 1,
-        Tone: 1,
-        MediaType: 4,
-        Media: "El Cronista",
-        Section: " Economía y Política",
-        Link: "",
-        consultasId: 5441,
-        noticiaId: 677374571
-    },
     //Noticia de Online
     {
         Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
@@ -37,6 +25,18 @@ export const notificationsHistory = [
         Link: "",
         consultasId: 5442,
         noticiaId: 674671645
+    },
+    //Noticia de impresos
+    {
+        Title: "Gradualismo: las ideas de Tal vi, el nuevo asesor de Luis Caputo",
+        Tier: 1,
+        Tone: 1,
+        MediaType: 4,
+        Media: "El Cronista",
+        Section: " Economía y Política",
+        Link: "",
+        consultasId: 5441,
+        noticiaId: 677374571
     },
     //Noticia de Radio
     {
