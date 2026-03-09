@@ -7,5 +7,7 @@ export const notificationList = [
         Media: "Automagazine (Online)",
         Section: "Deportes",
         Link: "https://globalne.ws/v2aETwbSAy5pkI0wLhM39mAV8UawofctvsXHKJ3V-pE",
+        consultasId: 5442,
+        noticiaId: 674671645
     },
 ];
