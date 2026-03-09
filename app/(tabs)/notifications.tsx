@@ -3,16 +3,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { notificationsHistory } from '@/mocks/mockUpsAlert';
 import { Image } from 'expo-image';
-import { StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   //Mapear listado de notificaciones recibidas desde el socket
-  const listAlerts = notificationsHistory
-  console.log(listAlerts)
-  //Navegación deep linkin con expo router
-
-  //Navegación con router de react native
-
 
   return (
     <ParallaxScrollView
@@ -26,49 +21,29 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
       </ThemedView>
-      {/* Tarjeta con la información de notificación + combinación con deep linking */}
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>Metadata</ThemedText>
-        <ThemedText type="subtitle">Titulo noticia</ThemedText>
-      </ThemedView>
-      {/* <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView> */}
-      {/* <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView> */}
+      {/* Tarjeta con la información de notificación + combinación con deep linking c/expo router */}
+      <View>
+        {notificationsHistory.map((notif:any) => (
+          <Pressable
+            key={notif.noticiaId}
+            onPress={() =>
+              router.push({
+                pathname: '/news/[id]',
+                params: {
+                  id: String(notif.noticiaId),
+                  consultasId: String(notif.consultasId),
+                },
+              })
+            }
+          >
+            <ThemedView key={notif.noticiaId} style={styles.cardContainer}>
+              <ThemedText>{`${notif.Media} | ${notif.Section}`}</ThemedText>
+              <ThemedText type="subtitle">{notif.Title}</ThemedText>
+            </ThemedView>
+          </Pressable>
+          
+        ))}
+      </View>
     </ParallaxScrollView>
   );
 }
@@ -79,9 +54,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  cardContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.49)',
   },
   reactLogo: {
     height: 178,

@@ -1,12 +1,17 @@
+import React from 'react';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Image } from 'expo-image';
 import { StyleSheet } from 'react-native';
-import React from 'react';
+import { useLocalSearchParams } from 'expo-router';
 
 
 export default function NewsScreen() {
+    const { id, consultasId } = useLocalSearchParams();
+    console.log("noticiaId:", id);
+    console.log("consultasId:", consultasId);
+
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,8 +24,11 @@ export default function NewsScreen() {
                 <ThemedView style={styles.titleContainer}>
                     <ThemedText type="title">Noticia</ThemedText>
                 </ThemedView>
-                <ThemedText>Sección para probar nueva arquitectura de React Native & Expo Go</ThemedText>
-                <ThemedText>Detalle de la noticia</ThemedText>
+                <ThemedView style={styles.cardContainer}>
+                  <ThemedText>Sección para probar nueva arquitectura de React Native & Expo Go</ThemedText>
+                  <ThemedText>Detalle de la noticia</ThemedText>
+                  <ThemedText>{`${id} ${consultasId}`}</ThemedText>
+                </ThemedView>
         </ParallaxScrollView>
     )
 }
@@ -31,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  stepContainer: {
+  cardContainer: {
     gap: 8,
     marginBottom: 8,
   },
