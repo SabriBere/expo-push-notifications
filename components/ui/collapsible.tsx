@@ -104,6 +104,7 @@ export function Collapsible() {
       </Pressable>
       <Pressable style={styles.button} onPress={() => sendUnsuscribeAlerts()}>
         <Text style={styles.text}>Desuscribe del socekt</Text>
+        <Text style={styles.text}>Deja de recibir alertas en tiempo real</Text>
       </Pressable>
     </ThemedView>
   );
