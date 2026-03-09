@@ -1,13 +1,19 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link, router } from 'expo-router';
+import { notificationsHistory } from '@/mocks/mockUpsAlert';
+import { Image } from 'expo-image';
+import { StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
+  //Mapear listado de notificaciones recibidas desde el socket
+  const listAlerts = notificationsHistory
+  console.log(listAlerts)
+  //Navegación deep linkin con expo router
 
-  
+  //Navegación con router de react native
+
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -20,20 +26,10 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
       </ThemedView>
+      {/* Tarjeta con la información de notificación + combinación con deep linking */}
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText>Metadata</ThemedText>
+        <ThemedText type="subtitle">Titulo noticia</ThemedText>
       </ThemedView>
       {/* <ThemedView style={styles.stepContainer}>
         <Link href="/modal">
