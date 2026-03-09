@@ -1,9 +1,10 @@
-import React from 'react'
 import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { Image } from 'expo-image';
-import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Image } from 'expo-image';
+import { StyleSheet } from 'react-native';
+import React from 'react';
+
 
 export default function NewsScreen() {
     return (
@@ -16,9 +17,10 @@ export default function NewsScreen() {
                 />
             }>
                 <ThemedView style={styles.titleContainer}>
-                    <ThemedText type="title">Noticias</ThemedText>
+                    <ThemedText type="title">Noticia</ThemedText>
                 </ThemedView>
                 <ThemedText>Sección para probar nueva arquitectura de React Native & Expo Go</ThemedText>
+                <ThemedText>Detalle de la noticia</ThemedText>
         </ParallaxScrollView>
     )
 }

@@ -15,11 +15,13 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+//Manejo de deep linking
 function useNotificationObserver() {
+  //Toma la última para llevar al listado de notificaciones
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
   useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as NotificationData;
       const url = data.url;
 
