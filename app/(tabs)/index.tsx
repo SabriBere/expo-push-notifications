@@ -27,10 +27,10 @@ export default function TabTwoScreen() {
           style={{
             fontFamily: Fonts.rounded,
           }}>
-          Notificaciones
+          Configuraciones
         </ThemedText>
       </ThemedView>
-      <ThemedText>Esta aplicación incluye un ejemplo de código para empezar</ThemedText>
+      <ThemedText>Esta aplicación incluye un ejemplo de código para demo de notificaciones</ThemedText>
       <Collapsible title="Botones de prueba">
         <ThemedText>
           This app has two screens:{' '}

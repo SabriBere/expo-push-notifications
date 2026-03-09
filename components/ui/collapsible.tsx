@@ -1,4 +1,5 @@
 import { ThemedView } from '@/components/themed-view';
+import { notificationList } from '@/mocks/mockUpsAlert';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -120,11 +121,17 @@ export function Collapsible() {
         });
       }
 
+      //Ver formato de notificaciones en cada OS
       await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Praetorian',
-          subtitle: 'Noticias',
-          body: 'Esta es una alerta local en iOS/Android 🚀',
+          subtitle: notificationList[0].Media,
+          // body: 'Esta es una alerta local en iOS/Android 🚀',
+          body: notificationList[0].Title,
+          data: {
+            url: '/notifications',
+            id: notificationList[0].noticiaId
+          },
           sound: true,
         },
         trigger: {
