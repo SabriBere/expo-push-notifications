@@ -20,7 +20,7 @@ export function Collapsible() {
     try {
       //Configurar canal (iOS)
       const settings = await Notifications.requestPermissionsAsync();
-      console.log(settings, 'qué devuelve en settings')
+      // console.log(settings, 'qué devuelve en settings')
 
       //Si las desactivo y las quiere volver a activar
       if (!settings.granted) {
@@ -74,7 +74,7 @@ export function Collapsible() {
   //Desuscripción notificaciones de settings o ajustes - Guia al usuario.
   async function triggerSettingsPermissions() {
     // console.log('ingresa aca?')
-    //Lleva al usuario a los settings
+    //Lleva al usuario a los settings - Investigar cregresar a la app atomaticamente desde settings
     Alert.alert(
     "Notificaciones",
     "Para desactivar las notificaciones debes hacerlo desde la configuración del sistema.",
@@ -88,13 +88,22 @@ export function Collapsible() {
   );
   }
 
+  //Enviar por socket a backend que no quiere recibir más alertas
+  //Puede volver a querer recibir.
+  function sendUnsuscribeAlerts(){}
+
+  
   return (
     <ThemedView style={styles.container}>
       <Pressable style={styles.button} onPress={() => triggerPushNotifications()}>
         <Text style={styles.text}>Test notificación iOS/android</Text>
+        <Text style={styles.text}>Activa permiso o vuelve a preguntar</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => triggerSettingsPermissions()}>
         <Text style={styles.text}>Test olvidar permisos</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={() => sendUnsuscribeAlerts()}>
+        <Text style={styles.text}>Desuscribe del socekt</Text>
       </Pressable>
     </ThemedView>
   );
