@@ -41,23 +41,25 @@ export function Collapsible() {
         });
       }
 
+      //depende de cada OS
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Praetorian",
-          subtitle: "Noticias",
+          subtitle: "Noticias", //solo disponible para iOS
           body: 'Esta es una alerta local en iOS/Android 🚀',
           sound: true,
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: Platform.OS === "ios"? 0 : 1,
+          seconds: 1,
         },
       });
 
 
     } catch (error) {
+        //Agregar textos en varios idiomas
         console.error('Error al disparar notificación:', error);
-        Alert.alert('Error', 'No se pudo disparar la notificación.');
+        Alert.alert('Permiso no garantizado', 'No se otorgaron permisos para notificaciones.');
     }
   }
 
@@ -69,7 +71,7 @@ export function Collapsible() {
       <Pressable style={styles.button} onPress={() => triggerPushNotifications()}>
         <Text style={styles.text}>Test notificación iOS/android</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => triggerForgotPermissions()}>
+      <Pressable style={styles.button}>
         <Text style={styles.text}>Test olvidar permisos</Text>
       </Pressable>
     </ThemedView>
