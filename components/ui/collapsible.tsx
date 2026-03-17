@@ -124,27 +124,27 @@ export function Collapsible() {
 
       for (const [index, notif] of notificationsHistory.entries()) {
           
-          const medio = { icon: "⚪" };
+          let tone = "⚪";
 
           switch (notif.Tone) {
               case 1:
-                  medio.icon = "🟢";
+                  tone = "🟢";
                   break;
               case 2:
-                  medio.icon = "🔴";
+                  tone = "🔴";
                   break;
               case 3:
-                  medio.icon = "🟣";
+                  tone = "🟣";
                   break;
               case 4:
-                  medio.icon = "🟡";
+                  tone = "🟡";
                   break;
           }
 
           await Notifications.scheduleNotificationAsync({
               content: {
                   title: 'Test Notification',
-                  subtitle: `${medio.icon} ${notif.Media}`,
+                  subtitle: `${tone} ${notif.Media} ${notif.Section}`,
                   body: notif.Title,
                   data: {
                       url: `/news/${notif.NoticiaId}`,
