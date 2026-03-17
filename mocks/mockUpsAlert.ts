@@ -1,65 +1,65 @@
 export const notificationList = [
     {
-        Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
-        Tier: 1,
-        Tone: 1,
-        MediaType: 4,
-        Media: "Automagazine (Online)",
-        Section: "Deportes",
-        Link: "https://globalne.ws/v2aETwbSAy5pkI0wLhM39mAV8UawofctvsXHKJ3V-pE",
-        consultasId: 5442,
-        noticiaId: 674671645,
+        Title: "Nueva tecnología permite mejorar la eficiencia energética en ciudades",
+        Tier: 2,
+        Tone: 2,
+        MediaType: 2,
+        Media: "TechDaily (Online)",
+        Section: "Innovación",
+        Link: "https://example.com/noticia-energia",
+        consultasId: 1001,
+        noticiaId: 500001,
     },
 ];
 
-//Mockup para mapear
+// Mockup
 export const notificationsHistory = [
-    //Noticia de Online
+    // News Online
     {
-        Title: "Kia transportó Trofeo FIFA World Cup 2026 en el Trophy Tour Quito",
-        Tier: 1,
-        Tone: 1,
+        Title: "Nueva tecnología permite mejorar la eficiencia energética en ciudades",
+        Tier: 2,
+        Tone: 2,
         MediaType: 4,
-        Media: "Automagazine (Online)",
-        Section: "Deportes",
+        Media: "TechDaily (Online)",
+        Section: "Innovación",
         Link: "",
-        ConsultasId: 5442,
-        NoticiaId: 674671645,
+        ConsultasId: 1001,
+        NoticiaId: 500001,
     },
-    //Noticia de impresos
+    // News of press
     {
-        Title: "Gradualismo: las ideas de Tal vi, el nuevo asesor de Luis Caputo",
-        Tier: 1,
+        Title: "El mercado laboral muestra señales de recuperación en 2026",
+        Tier: 3,
         Tone: 1,
-        MediaType: 4,
-        Media: "El Cronista",
-        Section: " Economía y Política",
+        MediaType: 1,
+        Media: "Diario Central",
+        Section: "Economía",
         Link: "",
-        ConsultasId: 5441,
-        NoticiaId: 677374571,
+        ConsultasId: 1002,
+        NoticiaId: 500002,
     },
-    //Noticia de Radio
+    // News of Radio
     {
-        Title: "Pase entre programas",
+        Title: "Entrevista sobre tendencias tecnológicas actuales",
         Tier: 1,
-        Tone: 1,
-        MediaType: 4,
-        Media: "Rivadavia",
-        Section: "Vamos Rivadavia",
+        Tone: 3,
+        MediaType: 2,
+        Media: "Radio Horizonte",
+        Section: "Mañana Tech",
         Link: "",
-        ConsultasId: 5443,
-        NoticiaId: 16879521,
+        ConsultasId: 1003,
+        NoticiaId: 500003,
     },
-    //Noticia de TV
+    // News of TV
     {
-        Title: "Las vacantes en la Justicia",
-        Tier: 1,
-        Tone: 1,
-        MediaType: 4,
-        Media: "América TV",
-        Section: "Arriba América",
+        Title: "Debate sobre el impacto de la inteligencia artificial",
+        Tier: 2,
+        Tone: 2,
+        MediaType: 3,
+        Media: "Canal 8",
+        Section: "Actualidad",
         Link: "",
-        ConsultasId: 5444,
-        NoticiaId: 16878508,
+        ConsultasId: 1004,
+        NoticiaId: 500004,
     },
 ];

@@ -1,7 +1,7 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useEffect } from 'react';
-import { Href, Stack, router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import 'react-native-reanimated';
@@ -22,13 +22,13 @@ function useNotificationObserver() {
       const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as NotificationData;
       const url = data.url;
-      console.log(data?.params?.consultasId, data?.params.id)
+      const { consultasId } = data.params
 
       if (url) {
         router.push({
           pathname: url,
           params: {
-            consultasId: data?.params?.consultasId,
+            consultasId: consultasId,
           },
         })
       }
