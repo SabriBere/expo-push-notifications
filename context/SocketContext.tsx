@@ -16,21 +16,21 @@ const SocketContext = createContext<SocketContextProps | undefined>(undefined);
 export const SocketProvider = ({ children }: RootLayoutProps) => {
     const queryClient = useQueryClient();
     const socketRef = useRef<WebSocket | null>(null);
-    const socketUrl = Constants.expoConfig?.extra! || "";
+    const socketUrl = "ws://192.168.1.12:8001";
     const [connection, setConnection] = useState<null | string>(null);
     // const [messages, setMessages] = useState<any[]>([]);
 
     useEffect(() => {
-        if(!socketUrl){
-            console.log("Miss URL of Socket")
-        }
+        // if(!socketUrl){
+        //     console.log("Miss URL of Socket")
+        // }
 
         const socket = new WebSocket(`${socketUrl}`);
         socketRef.current = socket;
 
          socket.onopen = () => {
             console.log("Success - Connected");
-            socket.send(JSON.stringify("Hello from TestNotification"))
+            socket.send(JSON.stringify({ type: "HELLO_SERVER" }));
         };
 
         socket.onmessage = (event: MessageEvent) => {

@@ -30,7 +30,7 @@ export function Collapsible() {
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
   const appState = useRef(AppState.currentState);
   const { socketRef } = useSocket()
-  console.log(socketRef, 'llega algo?')
+  // console.log(socketRef, 'llega algo?')
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
