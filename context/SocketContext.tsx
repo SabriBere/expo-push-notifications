@@ -1,30 +1,65 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, RefObject, useContext, useRef, useState, useEffect } from 'react';
+import { useQueryClient } from "@tanstack/react-query";
+import Constants from "expo-constants";
 
 interface RootLayoutProps {
     children: React.ReactNode;
 }
-
 interface SocketContextProps {
-    messages: any[];
+    socketRef: RefObject<WebSocket | null>;
+    // messages: any[];
     connection: any
 }
 
 const SocketContext = createContext<SocketContextProps | undefined>(undefined);
 
 export const SocketProvider = ({ children }: RootLayoutProps) => {
-
+    const queryClient = useQueryClient();
+    const socketRef = useRef<WebSocket | null>(null);
+    const socketUrl = Constants.expoConfig?.extra! || "";
     const [connection, setConnection] = useState<null | string>(null);
-    const [messages, setMessages] = useState<any[]>([]);
+    // const [messages, setMessages] = useState<any[]>([]);
 
+    useEffect(() => {
+        if(!socketUrl){
+            console.log("Miss URL of Socket")
+        }
+
+        const socket = new WebSocket(`${socketUrl}`);
+        socketRef.current = socket;
+
+         socket.onopen = () => {
+            console.log("Success - Connected");
+            socket.send(JSON.stringify("Hello from TestNotification"))
+        };
+
+        socket.onmessage = (event: MessageEvent) => {
+            try {
+                const notificationsData = JSON.parse(event.data);
+                queryClient.setQueryData(["notifications"], notificationsData ?? []);
+            } catch (error) {
+                console.error("Error to recibe notifications", error);
+            }
+        };
+
+         socket.onerror = (event: any) => {
+            console.error("Error to connect Socket", event);
+        };
+    
+      return () => {
+        socket.close();
+      }
+    }, [])
+    
     return (
-        <SocketContext.Provider value={{ messages, connection }}>{children}</SocketContext.Provider>
+        <SocketContext.Provider value={{ socketRef, connection }}>{children}</SocketContext.Provider>
     )
 }
 
-export const useSocket = () => {
+export const useSocket = (): SocketContextProps => {
     const context = useContext(SocketContext);
-    if (context === undefined) {
-        throw new Error("Error using Socket Context");
+    if (!context) {
+        throw new Error("useSocket must be used with SocketContexProvider");
     }
     return context;
 };

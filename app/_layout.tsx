@@ -1,13 +1,12 @@
 import { SocketProvider } from "@/context/SocketContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from 'expo-notifications';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
 
 type NotificationData = {
   url?: any;
@@ -47,16 +46,17 @@ export default function RootLayout() {
   useNotificationObserver();
 
   return (
-    <SocketProvider>
+    
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <SocketProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </SocketProvider>
         </QueryClientProvider>
-    </SocketProvider>
   );
 }
