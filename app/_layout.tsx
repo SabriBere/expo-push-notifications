@@ -6,9 +6,9 @@ import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import 'react-native-reanimated';
 
-
 type NotificationData = {
-  url?: Href;
+  url?: any;
+  params:any
 };
 
 export const unstable_settings = {
@@ -17,36 +17,25 @@ export const unstable_settings = {
 
 //Manejo de deep linking
 function useNotificationObserver() {
-  //Toma la última para llevar al listado de notificaciones
-  const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
   useEffect(() => {
       const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as NotificationData;
       const url = data.url;
+      console.log(data?.params?.consultasId, data?.params.id)
 
       if (url) {
-        router.push(url);
+        router.push({
+          pathname: url,
+          params: {
+            consultasId: data?.params?.consultasId,
+          },
+        })
       }
     });
 
     return () => subscription.remove();
   }, []);
-
-  useEffect(() => {
-    if (
-      lastNotificationResponse &&
-      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
-    ) {
-      const data = lastNotificationResponse.notification.request.content.data as NotificationData;
-      const url = data.url;
-
-      if (url) {
-        router.push(url);
-        Notifications.clearLastNotificationResponse();
-      }
-    }
-  }, [lastNotificationResponse]);
 }
 
 
