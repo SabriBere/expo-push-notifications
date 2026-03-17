@@ -1,7 +1,8 @@
 import { ThemedView } from '@/components/themed-view';
+import { useSocket } from '@/context/SocketContext';
 import { notificationsHistory } from '@/mocks/mockUpsAlert';
 import * as Notifications from 'expo-notifications';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
@@ -28,6 +29,8 @@ export function Collapsible() {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
   const appState = useRef(AppState.currentState);
+  const { socketRef } = useSocket()
+  console.log(socketRef, 'llega algo?')
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
@@ -124,27 +127,27 @@ export function Collapsible() {
 
       for (const [index, notif] of notificationsHistory.entries()) {
           
-          let tone = "⚪";
+          let icon = "⚪";
 
-          switch (notif.Tone) {
+          switch (notif.MediaType) {
               case 1:
-                  tone = "🟢";
+                  icon = "📰";
                   break;
               case 2:
-                  tone = "🔴";
+                  icon = "📱";
                   break;
               case 3:
-                  tone = "🟣";
+                  icon = "🖥️";
                   break;
               case 4:
-                  tone = "🟡";
+                  icon = "🎙️";
                   break;
           }
 
           await Notifications.scheduleNotificationAsync({
               content: {
                   title: 'Test Notification',
-                  subtitle: `${tone} ${notif.Media} ${notif.Section}`,
+                  subtitle: `${icon} ${notif.Media} ${notif.Section}`,
                   body: notif.Title,
                   data: {
                       url: `/news/${notif.NoticiaId}`,
