@@ -8,7 +8,7 @@ export const notificationList = [
         Section: "Deportes",
         Link: "https://globalne.ws/v2aETwbSAy5pkI0wLhM39mAV8UawofctvsXHKJ3V-pE",
         consultasId: 5442,
-        noticiaId: 674671645
+        noticiaId: 674671645,
     },
 ];
 
@@ -23,8 +23,8 @@ export const notificationsHistory = [
         Media: "Automagazine (Online)",
         Section: "Deportes",
         Link: "",
-        consultasId: 5442,
-        noticiaId: 674671645
+        ConsultasId: 5442,
+        NoticiaId: 674671645,
     },
     //Noticia de impresos
     {
@@ -35,8 +35,8 @@ export const notificationsHistory = [
         Media: "El Cronista",
         Section: " Economía y Política",
         Link: "",
-        consultasId: 5441,
-        noticiaId: 677374571
+        ConsultasId: 5441,
+        NoticiaId: 677374571,
     },
     //Noticia de Radio
     {
@@ -47,8 +47,8 @@ export const notificationsHistory = [
         Media: "Rivadavia",
         Section: "Vamos Rivadavia",
         Link: "",
-        consultasId: 5443,
-        noticiaId: 16879521
+        ConsultasId: 5443,
+        NoticiaId: 16879521,
     },
     //Noticia de TV
     {
@@ -59,7 +59,7 @@ export const notificationsHistory = [
         Media: "América TV",
         Section: "Arriba América",
         Link: "",
-        consultasId: 5444,
-        noticiaId: 16878508
+        ConsultasId: 5444,
+        NoticiaId: 16878508,
     },
-]
+];

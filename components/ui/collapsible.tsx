@@ -1,5 +1,5 @@
 import { ThemedView } from '@/components/themed-view';
-import { notificationList } from '@/mocks/mockUpsAlert';
+import { notificationsHistory } from '@/mocks/mockUpsAlert';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -20,6 +20,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
+    threadIdentifier: true
   }),
 });
 
@@ -121,27 +122,48 @@ export function Collapsible() {
         });
       }
 
-      //Ver formato de notificaciones en cada OS
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Praetorian',
-          subtitle: notificationList[0].Media,
-          // body: 'Esta es una alerta local en iOS/Android 🚀',
-          body: notificationList[0].Title,
-          data: {
-            url: '/notifications',
-            id: notificationList[0].noticiaId
-          },
-          sound: true,
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 1,
-        },
-      });
+      for (const [index, notif] of notificationsHistory.entries()) {
+          
+          const medio = { icon: "⚪" };
+
+          switch (notif.Tone) {
+              case 1:
+                  medio.icon = "🟢";
+                  break;
+              case 2:
+                  medio.icon = "🔴";
+                  break;
+              case 3:
+                  medio.icon = "🟣";
+                  break;
+              case 4:
+                  medio.icon = "🟡";
+                  break;
+          }
+
+          await Notifications.scheduleNotificationAsync({
+              content: {
+                  title: 'Test Notification',
+                  subtitle: `${medio.icon} ${notif.Media}`,
+                  body: notif.Title,
+                  data: {
+                      url: `/news/${notif.NoticiaId}`,
+                      params: {
+                        id: notif.NoticiaId,
+                        consultasId: notif.ConsultasId
+                      },
+                  },
+                  sound: true,
+              },
+              trigger: {
+                  type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+                  seconds: index + 1
+              },
+          });
+      }
+
     } catch (error) {
       console.error('Error al disparar notificación:', error);
-      Alert.alert('Permiso no garantizado', 'No se otorgaron permisos para notificaciones.');
     }
   }
 
