@@ -18,7 +18,7 @@ export const notificationsHistory = [
     {
         Title: "Nueva tecnología permite mejorar la eficiencia energética en ciudades",
         Tier: 2,
-        Tone: 2,
+        Tone: 1,
         MediaType: 4,
         Media: "TechDaily (Online)",
         Section: "Innovación",
@@ -30,7 +30,7 @@ export const notificationsHistory = [
     {
         Title: "El mercado laboral muestra señales de recuperación en 2026",
         Tier: 3,
-        Tone: 1,
+        Tone: 2,
         MediaType: 1,
         Media: "Diario Central",
         Section: "Economía",
@@ -54,7 +54,7 @@ export const notificationsHistory = [
     {
         Title: "Debate sobre el impacto de la inteligencia artificial",
         Tier: 2,
-        Tone: 2,
+        Tone: 4,
         MediaType: 3,
         Media: "Canal 8",
         Section: "Actualidad",
