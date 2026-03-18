@@ -1,6 +1,7 @@
 import { ThemedView } from '@/components/themed-view';
 import { useSocket } from '@/context/SocketContext';
 import { notificationsHistory } from '@/mocks/mockUpsAlert';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -26,11 +27,27 @@ Notifications.setNotificationHandler({
 });
 
 export function Collapsible() {
+  const queryClient = useQueryClient();
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
   const appState = useRef(AppState.currentState);
   const { socketRef } = useSocket()
-  // console.log(socketRef, 'llega algo?')
+
+      const {
+        data: notifications = [],
+        isSuccess,
+        isLoading,
+        refetch,
+    } = useQuery<any>({
+        queryKey: ["notifications"],
+        queryFn: () => {
+            const data = queryClient.getQueryData(["notifications"]);
+            return data ?? []; // si no indico esto aca, en la consola del navegadar da un error con la query
+        },
+        enabled: !!socketRef.current,
+    });
+
+    console.log(notifications?.data, isSuccess)
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
@@ -125,7 +142,7 @@ export function Collapsible() {
         });
       }
 
-      for (const [index, notif] of notificationsHistory.entries()) {
+      for (const [index, notif] of notifications?.data?.entries()) {
           
           let icon = "⚪";
 
@@ -215,7 +232,7 @@ export function Collapsible() {
           </Text>
         </View>
 
-        <Pressable style={styles.testButton} onPress={triggerPushNotifications}>
+        <Pressable style={styles.testButton}>
           <Text style={styles.testButtonText}>Enviar</Text>
         </Pressable>
       </View>
