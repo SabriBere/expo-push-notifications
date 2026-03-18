@@ -1,6 +1,7 @@
 import React, { createContext, RefObject, useContext, useRef, useState, useEffect } from 'react';
 import { useQueryClient } from "@tanstack/react-query";
 import Constants from "expo-constants";
+import { triggerPushNotifications } from './NotificationsUtils';
 
 interface RootLayoutProps {
     children: React.ReactNode;
@@ -36,7 +37,11 @@ export const SocketProvider = ({ children }: RootLayoutProps) => {
         socket.onmessage = (event: MessageEvent) => {
             try {
                 const notificationsData = JSON.parse(event.data);
+                console.log(notificationsData)
                 queryClient.setQueryData(["notifications"], notificationsData ?? []);
+                if (Array.isArray(notificationsData) && notificationsData.length > 0) {
+                    triggerPushNotifications(notificationsData);
+                }
             } catch (error) {
                 console.error("Error to recibe notifications", error);
             }
