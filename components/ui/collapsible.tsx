@@ -1,9 +1,8 @@
 import { ThemedView } from '@/components/themed-view';
 import { useSocket } from '@/context/SocketContext';
-import { notificationsHistory } from '@/mocks/mockUpsAlert';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
@@ -33,21 +32,21 @@ export function Collapsible() {
   const appState = useRef(AppState.currentState);
   const { socketRef } = useSocket()
 
-      const {
-        data: notifications = [],
-        isSuccess,
-        isLoading,
-        refetch,
-    } = useQuery<any>({
-        queryKey: ["notifications"],
-        queryFn: () => {
-            const data = queryClient.getQueryData(["notifications"]);
-            return data ?? []; // si no indico esto aca, en la consola del navegadar da un error con la query
-        },
-        enabled: !!socketRef.current,
-    });
+  const {
+    data: notifications = [],
+    isSuccess,
+    isLoading,
+    refetch,
+  } = useQuery<any>({
+    queryKey: ["notifications"],
+    queryFn: () => {
+      const data = queryClient.getQueryData(["notifications"]);
+      return data ?? []; // si no indico esto aca, en la consola del navegadar da un error con la query
+    },
+    enabled: !!socketRef.current,
+  });
 
-    console.log(notifications?.data, isSuccess)
+  console.log(notifications?.data, isSuccess)
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
@@ -143,43 +142,43 @@ export function Collapsible() {
       }
 
       for (const [index, notif] of notifications?.data?.entries()) {
-          
-          let icon = "⚪";
 
-          switch (notif.MediaType) {
-              case 1:
-                  icon = "📰";
-                  break;
-              case 2:
-                  icon = "📱";
-                  break;
-              case 3:
-                  icon = "🖥️";
-                  break;
-              case 4:
-                  icon = "🎙️";
-                  break;
-          }
+        let icon = "⚪";
 
-          await Notifications.scheduleNotificationAsync({
-              content: {
-                  title: 'Test Notification',
-                  subtitle: `${icon} ${notif.Media} ${notif.Section}`,
-                  body: notif.Title,
-                  data: {
-                      url: `/news/${notif.NoticiaId}`,
-                      params: {
-                        id: notif.NoticiaId,
-                        consultasId: notif.ConsultasId
-                      },
-                  },
-                  sound: true,
+        switch (notif.MediaType) {
+          case 1:
+            icon = "📰";
+            break;
+          case 2:
+            icon = "📱";
+            break;
+          case 3:
+            icon = "🖥️";
+            break;
+          case 4:
+            icon = "🎙️";
+            break;
+        }
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Test Notification',
+            subtitle: `${icon} ${notif.Media} ${notif.Section}`,
+            body: notif.Title,
+            data: {
+              url: `/news/${notif.NoticiaId}`,
+              params: {
+                id: notif.NoticiaId,
+                consultasId: notif.ConsultasId
               },
-              trigger: {
-                  type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-                  seconds: index + 1
-              },
-          });
+            },
+            sound: true,
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: index + 1
+          },
+        });
       }
 
     } catch (error) {
