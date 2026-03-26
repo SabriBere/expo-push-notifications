@@ -23,15 +23,15 @@ export default function HomeScreen() {
       </ThemedView>
       {/* Tarjeta con la información de notificación + combinación con deep linking c/expo router */}
       <View>
-        {notificationsHistory.map((notif:any) => (
+        {notificationsHistory?.map((notif:any) => (
           <Pressable
             key={notif.noticiaId}
             onPress={() =>
               router.push({
                 pathname: '/news/[id]',
                 params: {
-                  id: String(notif.noticiaId),
-                  consultasId: String(notif.consultasId),
+                  id: notif.NoticiaId,
+                  consultasId: notif.ConsultasId,
                 },
               })
             }
