@@ -1,17 +1,14 @@
 import { ThemedView } from '@/components/themed-view';
-import { notificationList } from '@/mocks/mockUpsAlert';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
   Linking,
-  Platform,
-  Pressable,
   StyleSheet,
   Switch,
   Text,
-  View,
+  View
 } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -20,6 +17,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
+    threadIdentifier: true
   }),
 });
 
@@ -79,72 +77,6 @@ export function Collapsible() {
     console.log('Desuscribir del socket / avisar a backend que no envíe más alertas');
   }
 
-  //Simula la recepción de notificaciones push + revisión de permisos
-  async function triggerPushNotifications() {
-    try {
-      let settings = await Notifications.getPermissionsAsync();
-
-      if (!settings.granted) {
-        if (!settings.canAskAgain) {
-          Alert.alert(
-            'Notificaciones desactivadas',
-            'Debes habilitarlas desde la configuración',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              {
-                text: 'Abrir configuración',
-                onPress: () => Linking.openSettings(),
-              },
-            ]
-          );
-          return;
-        }
-
-        settings = await Notifications.requestPermissionsAsync();
-        setSystemNotificationsEnabled(settings.granted);
-
-        if (!settings.granted) {
-          Alert.alert(
-            'Permiso no garantizado',
-            'No se otorgaron permisos para notificaciones.'
-          );
-          return;
-        }
-      }
-
-      setSystemNotificationsEnabled(true);
-
-      if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: 'default',
-          importance: Notifications.AndroidImportance.MAX,
-        });
-      }
-
-      //Ver formato de notificaciones en cada OS
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Praetorian',
-          subtitle: notificationList[0].Media,
-          // body: 'Esta es una alerta local en iOS/Android 🚀',
-          body: notificationList[0].Title,
-          data: {
-            url: '/notifications',
-            id: notificationList[0].noticiaId
-          },
-          sound: true,
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 1,
-        },
-      });
-    } catch (error) {
-      console.error('Error al disparar notificación:', error);
-      Alert.alert('Permiso no garantizado', 'No se otorgaron permisos para notificaciones.');
-    }
-  }
-
   return (
     <ThemedView style={styles.container}>
       {/* Permite activar/desactivar notificaciones push */}
@@ -179,20 +111,6 @@ export function Collapsible() {
           value={realtimeAlertsEnabled}
           onValueChange={sendUnsuscribeAlerts}
         />
-      </View>
-
-      {/* Desuscribirse del websocket */}
-      <View style={styles.card}>
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Probar notificación local</Text>
-          <Text style={styles.description}>
-            Envía una notificación local de prueba si los permisos del sistema están activos.
-          </Text>
-        </View>
-
-        <Pressable style={styles.testButton} onPress={triggerPushNotifications}>
-          <Text style={styles.testButtonText}>Enviar</Text>
-        </Pressable>
       </View>
     </ThemedView>
   );

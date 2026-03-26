@@ -1,14 +1,16 @@
+import { SocketProvider } from "@/context/SocketContext";
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useEffect } from 'react';
-import { Href, Stack, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from 'expo-notifications';
+import { Stack, router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-
 type NotificationData = {
-  url?: Href;
+  url?: any;
+  params: any
 };
 
 export const unstable_settings = {
@@ -17,50 +19,44 @@ export const unstable_settings = {
 
 //Manejo de deep linking
 function useNotificationObserver() {
-  //Toma la última para llevar al listado de notificaciones
-  const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
   useEffect(() => {
-      const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as NotificationData;
       const url = data.url;
+      const { consultasId } = data.params
 
       if (url) {
-        router.push(url);
+        router.push({
+          pathname: url,
+          params: {
+            consultasId: consultasId,
+          },
+        })
       }
     });
 
     return () => subscription.remove();
   }, []);
-
-  useEffect(() => {
-    if (
-      lastNotificationResponse &&
-      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
-    ) {
-      const data = lastNotificationResponse.notification.request.content.data as NotificationData;
-      const url = data.url;
-
-      if (url) {
-        router.push(url);
-        Notifications.clearLastNotificationResponse();
-      }
-    }
-  }, [lastNotificationResponse]);
 }
 
-
 export default function RootLayout() {
+  const queryClient = new QueryClient();
   const colorScheme = useColorScheme();
   useNotificationObserver();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+
+    <QueryClientProvider client={queryClient}>
+      <SocketProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SocketProvider>
+    </QueryClientProvider>
   );
 }

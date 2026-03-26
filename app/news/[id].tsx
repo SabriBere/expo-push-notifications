@@ -9,8 +9,6 @@ import { useLocalSearchParams } from 'expo-router';
 
 export default function NewsScreen() {
     const { id, consultasId } = useLocalSearchParams();
-    // console.log("noticiaId:", id);
-    // console.log("consultasId:", consultasId);
 
     return (
         <ParallaxScrollView
