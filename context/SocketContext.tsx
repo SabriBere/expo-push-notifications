@@ -1,6 +1,5 @@
-import React, { createContext, RefObject, useContext, useRef, useState, useEffect } from 'react';
 import { useQueryClient } from "@tanstack/react-query";
-import Constants from "expo-constants";
+import React, { createContext, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { triggerPushNotifications } from './NotificationsUtils';
 
 interface RootLayoutProps {
@@ -19,43 +18,46 @@ export const SocketProvider = ({ children }: RootLayoutProps) => {
     const socketRef = useRef<WebSocket | null>(null);
     const socketUrl = "ws://192.168.1.12:8001";
     const [connection, setConnection] = useState<null | string>(null);
-    // const [messages, setMessages] = useState<any[]>([]);
 
     useEffect(() => {
-        // if(!socketUrl){
-        //     console.log("Miss URL of Socket")
-        // }
-
         const socket = new WebSocket(`${socketUrl}`);
         socketRef.current = socket;
 
-         socket.onopen = () => {
+        socket.onopen = () => {
             console.log("Success - Connected");
             socket.send(JSON.stringify({ type: "HELLO_SERVER" }));
         };
 
-        socket.onmessage = (event: MessageEvent) => {
+        socket.onmessage = async (event: MessageEvent) => {
             try {
-                const notificationsData = JSON.parse(event.data);
-                console.log(notificationsData)
-                queryClient.setQueryData(["notifications"], notificationsData ?? []);
-                if (Array.isArray(notificationsData) && notificationsData.length > 0) {
-                    triggerPushNotifications(notificationsData);
+                const payload = JSON.parse(event.data);
+
+                const notificationsData = Array.isArray(payload)
+                    ? payload
+                    : Array.isArray(payload?.data)
+                        ? payload.data
+                        : [];
+
+                queryClient.setQueryData(["notifications"], notificationsData);
+
+                if (notificationsData.length > 0) {
+                    await triggerPushNotifications(notificationsData);
                 }
             } catch (error) {
-                console.error("Error to recibe notifications", error);
+                console.error("Error to receive notifications", error);
             }
         };
 
-         socket.onerror = (event: any) => {
+
+        socket.onerror = (event: any) => {
             console.error("Error to connect Socket", event);
         };
-    
-      return () => {
-        socket.close();
-      }
+
+        return () => {
+            socket.close();
+        }
     }, [])
-    
+
     return (
         <SocketContext.Provider value={{ socketRef, connection }}>{children}</SocketContext.Provider>
     )

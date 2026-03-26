@@ -1,18 +1,14 @@
 import { ThemedView } from '@/components/themed-view';
-import { useSocket } from '@/context/SocketContext';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
   Linking,
-  Platform,
-  Pressable,
   StyleSheet,
   Switch,
   Text,
-  View,
+  View
 } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -26,27 +22,9 @@ Notifications.setNotificationHandler({
 });
 
 export function Collapsible() {
-  const queryClient = useQueryClient();
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
   const appState = useRef(AppState.currentState);
-  const { socketRef } = useSocket()
-
-  const {
-    data: notifications = [],
-    isSuccess,
-    isLoading,
-    refetch,
-  } = useQuery<any>({
-    queryKey: ["notifications"],
-    queryFn: () => {
-      const data = queryClient.getQueryData(["notifications"]);
-      return data ?? []; // si no indico esto aca, en la consola del navegadar da un error con la query
-    },
-    enabled: !!socketRef.current,
-  });
-
-  console.log(notifications?.data, isSuccess)
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
@@ -99,93 +77,6 @@ export function Collapsible() {
     console.log('Desuscribir del socket / avisar a backend que no envíe más alertas');
   }
 
-  //Simula la recepción de notificaciones push + revisión de permisos
-  async function triggerPushNotifications() {
-    try {
-      let settings = await Notifications.getPermissionsAsync();
-
-      if (!settings.granted) {
-        if (!settings.canAskAgain) {
-          Alert.alert(
-            'Notificaciones desactivadas',
-            'Debes habilitarlas desde la configuración',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              {
-                text: 'Abrir configuración',
-                onPress: () => Linking.openSettings(),
-              },
-            ]
-          );
-          return;
-        }
-
-        settings = await Notifications.requestPermissionsAsync();
-        setSystemNotificationsEnabled(settings.granted);
-
-        if (!settings.granted) {
-          Alert.alert(
-            'Permiso no garantizado',
-            'No se otorgaron permisos para notificaciones.'
-          );
-          return;
-        }
-      }
-
-      setSystemNotificationsEnabled(true);
-
-      if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: 'default',
-          importance: Notifications.AndroidImportance.MAX,
-        });
-      }
-
-      for (const [index, notif] of notifications?.data?.entries()) {
-
-        let icon = "⚪";
-
-        switch (notif.MediaType) {
-          case 1:
-            icon = "📰";
-            break;
-          case 2:
-            icon = "📱";
-            break;
-          case 3:
-            icon = "🖥️";
-            break;
-          case 4:
-            icon = "🎙️";
-            break;
-        }
-
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Test Notification',
-            subtitle: `${icon} ${notif.Media} ${notif.Section}`,
-            body: notif.Title,
-            data: {
-              url: `/news/${notif.NoticiaId}`,
-              params: {
-                id: notif.NoticiaId,
-                consultasId: notif.ConsultasId
-              },
-            },
-            sound: true,
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-            seconds: index + 1
-          },
-        });
-      }
-
-    } catch (error) {
-      console.error('Error al disparar notificación:', error);
-    }
-  }
-
   return (
     <ThemedView style={styles.container}>
       {/* Permite activar/desactivar notificaciones push */}
@@ -220,20 +111,6 @@ export function Collapsible() {
           value={realtimeAlertsEnabled}
           onValueChange={sendUnsuscribeAlerts}
         />
-      </View>
-
-      {/* Desuscribirse del websocket */}
-      <View style={styles.card}>
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Probar notificación local</Text>
-          <Text style={styles.description}>
-            Envía una notificación local de prueba si los permisos del sistema están activos.
-          </Text>
-        </View>
-
-        <Pressable style={styles.testButton}>
-          <Text style={styles.testButtonText}>Enviar</Text>
-        </Pressable>
       </View>
     </ThemedView>
   );
