@@ -10,7 +10,7 @@ import 'react-native-reanimated';
 
 type NotificationData = {
   url?: any;
-  params:any
+  params: any
 };
 
 export const unstable_settings = {
@@ -21,7 +21,7 @@ export const unstable_settings = {
 function useNotificationObserver() {
 
   useEffect(() => {
-      const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data as NotificationData;
       const url = data.url;
       const { consultasId } = data.params
@@ -46,17 +46,17 @@ export default function RootLayout() {
   useNotificationObserver();
 
   return (
-    
-        <QueryClientProvider client={queryClient}>
-          <SocketProvider>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-              </Stack>
-              <StatusBar style="auto" />
-            </ThemeProvider>
-          </SocketProvider>
-        </QueryClientProvider>
+
+    <QueryClientProvider client={queryClient}>
+      <SocketProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </SocketProvider>
+    </QueryClientProvider>
   );
 }
