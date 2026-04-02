@@ -10,6 +10,11 @@ interface NotificationItem {
   ConsultasId: number;
 }
 
+type NotificationData = {
+  url?: any;
+  params: any
+};
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
@@ -21,58 +26,6 @@ Notifications.setNotificationHandler({
 
 const NEWS_CATEGORY_ID = "news-actions";
 const ACTION_MARK_AS_READ = "mark-as-read";
-
-//crear categoria
-export async function registerNotificationActions() {
-  await Notifications.setNotificationCategoryAsync(NEWS_CATEGORY_ID, [
-    {
-      identifier: ACTION_MARK_AS_READ,
-      //modificar textos para traducción
-      buttonTitle: "Leído",
-      options: {
-        opensAppToForeground: false,
-      },
-    },
-  ]);
-}
-
-//función de marcar como leido
-export function listenNotificationActions() {
-  return Notifications.addNotificationResponseReceivedListener(async (response) => {
-    const actionId = response.actionIdentifier;
-    const data = response.notification.request.content.data as {
-      url?: string;
-      params?: {
-        id?: number;
-        consultasId?: number;
-      };
-    };
-
-    // Acción custom: marcar como leído
-    if (actionId === ACTION_MARK_AS_READ) {
-      const noticiaId = data?.params?.id;
-      const consultasId = data?.params?.consultasId;
-
-      console.log("Marcar como leído:", { noticiaId, consultasId });
-
-      // Acá podés:
-      // 1) llamar a tu backend
-      // 2) actualizar react-query / redux
-      // 3) persistir en storage
-      return;
-    }
-
-    // Tap normal sobre la notificación
-    if (actionId === Notifications.DEFAULT_ACTION_IDENTIFIER) {
-      console.log("Abrir noticia:", data);
-      // Acá navegás con expo-router, por ejemplo
-      // router.push({
-      //   pathname: `/news/${data?.params?.id}`,
-      //   params: { consultasId: String(data?.params?.consultasId) },
-      // });
-    }
-  });
-}
 
 async function ensureNotificationPermissions() {
   let settings = await Notifications.getPermissionsAsync();
@@ -102,6 +55,61 @@ async function ensureNotificationPermissions() {
   }
 
   return true;
+}
+
+//crear categoria
+export async function registerNotificationActions() {
+  await Notifications.setNotificationCategoryAsync(NEWS_CATEGORY_ID, [
+    {
+      identifier: ACTION_MARK_AS_READ,
+      buttonTitle: "Marcar como leído",
+      options: {
+        opensAppToForeground: false,
+      },
+    },
+    // {
+    //   identifier: "open-news",
+    //   buttonTitle: "Abrir noticia",
+    //   options: {
+    //     opensAppToForeground: true,
+    //   },
+    // },
+  ]);
+}
+
+//función de marcar como leido
+export function listenNotificationActions() {
+  return Notifications.addNotificationResponseReceivedListener(async (response) => {
+    const actionId = response.actionIdentifier;
+    const data = response.notification.request.content.data as NotificationData;
+    const url = data.url;
+    const { consultasId } = data.params
+
+    // Acción custom: marcar como leído
+    if (actionId === ACTION_MARK_AS_READ) {
+      const noticiaId = data?.params?.id;
+      const consultasId = data?.params?.consultasId;
+
+      console.log("Marcar como leído:", { noticiaId, consultasId });
+
+      // Acá podés:
+      // 1) llamar a tu backend
+      // 2) actualizar react-query / redux
+      // 3) persistir en storage
+      return;
+    }
+
+    // Tap normal sobre la notificación
+    // if (actionId === Notifications.DEFAULT_ACTION_IDENTIFIER) {
+    //   console.log("Abrir noticia:", data);
+    //   router.push({
+    //     pathname: url,
+    //     params: {
+    //       consultasId: consultasId,
+    //     },
+    //   })
+    // }
+  });
 }
 
 export async function triggerPushNotifications(
