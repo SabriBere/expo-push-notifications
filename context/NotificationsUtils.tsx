@@ -10,6 +10,11 @@ interface NotificationItem {
   ConsultasId: number;
 }
 
+type NotificationData = {
+  url?: any;
+  params: any
+};
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
@@ -18,6 +23,9 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
+const NEWS_CATEGORY_ID = "news-actions";
+const ACTION_MARK_AS_READ = "mark-as-read";
 
 async function ensureNotificationPermissions() {
   let settings = await Notifications.getPermissionsAsync();
@@ -49,11 +57,68 @@ async function ensureNotificationPermissions() {
   return true;
 }
 
+//crear categoria
+export async function registerNotificationActions() {
+  await Notifications.setNotificationCategoryAsync(NEWS_CATEGORY_ID, [
+    {
+      identifier: ACTION_MARK_AS_READ,
+      buttonTitle: "Marcar como leído",
+      options: {
+        opensAppToForeground: false,
+      },
+    },
+    // {
+    //   identifier: "open-news",
+    //   buttonTitle: "Abrir noticia",
+    //   options: {
+    //     opensAppToForeground: true,
+    //   },
+    // },
+  ]);
+}
+
+//función de marcar como leido
+export function listenNotificationActions() {
+  return Notifications.addNotificationResponseReceivedListener(async (response) => {
+    const actionId = response.actionIdentifier;
+    const data = response.notification.request.content.data as NotificationData;
+    const url = data.url;
+    const { consultasId } = data.params
+
+    // Acción custom: marcar como leído
+    if (actionId === ACTION_MARK_AS_READ) {
+      const noticiaId = data?.params?.id;
+      const consultasId = data?.params?.consultasId;
+
+      console.log("Marcar como leído:", { noticiaId, consultasId });
+
+      // Acá podés:
+      // 1) llamar a tu backend
+      // 2) actualizar react-query / redux
+      // 3) persistir en storage
+      return;
+    }
+
+    // Tap normal sobre la notificación
+    // if (actionId === Notifications.DEFAULT_ACTION_IDENTIFIER) {
+    //   console.log("Abrir noticia:", data);
+    //   router.push({
+    //     pathname: url,
+    //     params: {
+    //       consultasId: consultasId,
+    //     },
+    //   })
+    // }
+  });
+}
+
 export async function triggerPushNotifications(
   notifications: NotificationItem[]
 ) {
   const hasPermission = await ensureNotificationPermissions();
   if (!hasPermission) return;
+
+  await registerNotificationActions();
 
   for (const notif of notifications) {
     let icon = "⚪";
@@ -78,6 +143,7 @@ export async function triggerPushNotifications(
         title: 'Test Notification',
         subtitle: `${icon} ${notif.Media} ${notif.Section}`,
         body: notif.Title,
+        categoryIdentifier: NEWS_CATEGORY_ID,
         data: {
           url: `/news/${notif.NoticiaId}`,
           params: {
