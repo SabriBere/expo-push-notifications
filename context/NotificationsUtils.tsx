@@ -1,4 +1,6 @@
 import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+import * as Device from "expo-device";
 import { Alert, Linking, Platform } from "react-native";
 
 interface NotificationItem {
@@ -75,6 +77,38 @@ export async function registerNotificationActions() {
     //   },
     // },
   ]);
+}
+
+function getExpoProjectId() {
+  const projectId =
+    Constants.easConfig?.projectId ??
+    Constants.expoConfig?.extra?.eas?.projectId ??
+    process.env.EXPO_PUBLIC_EAS_PROJECT_ID;
+
+  if (!projectId) {
+    throw new Error(
+      "Missing EAS projectId. Configure EXPO_PUBLIC_EAS_PROJECT_ID or extra.eas.projectId."
+    );
+  }
+
+  return projectId;
+}
+
+export async function registerForPushNotificationsAsync() {
+  if (!Device.isDevice) {
+    console.warn("Expo push notifications require a physical device.");
+    return null;
+  }
+
+  const hasPermission = await ensureNotificationPermissions();
+  if (!hasPermission) return null;
+
+  await registerNotificationActions();
+
+  const projectId = getExpoProjectId();
+  const token = await Notifications.getExpoPushTokenAsync({ projectId });
+
+  return token.data;
 }
 
 //función de marcar como leido
