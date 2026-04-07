@@ -20,7 +20,7 @@ export const SocketProvider = ({ children }: RootLayoutProps) => {
     const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isUnmountingRef = useRef(false);
     const appStateRef = useRef<AppStateStatus>(AppState.currentState);
-    const socketUrl = "ws://192.168.1.12:8001";
+    const socketUrl = process.env.EXPO_PUBLIC_API_SOCKET;
     const [connection, setConnection] = useState<null | string>(null);
 
     useEffect(() => {
@@ -41,6 +41,14 @@ export const SocketProvider = ({ children }: RootLayoutProps) => {
         }
 
         function connectSocket(forceReconnect = false) {
+            if (!socketUrl) {
+                console.warn(
+                    "Missing EXPO_PUBLIC_API_SOCKET. Skipping WebSocket connection."
+                );
+                setConnection("missing-config");
+                return;
+            }
+
             const currentSocket = socketRef.current;
 
             if (currentSocket) {
