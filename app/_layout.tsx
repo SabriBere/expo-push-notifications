@@ -47,7 +47,7 @@ function usePushRegistration() {
 
   useEffect(() => {
     let isMounted = true;
-    const socketUrl = process.env.API_SOCKET;
+    const socketUrl = process.env.EXPO_PUBLIC_API_SOCKET;
     const apiBaseUrl =
       process.env.EXPO_PUBLIC_API_URL ??
       socketUrl?.replace(/^ws:\/\//, "http://").replace(/:\d+$/, ":8000");
