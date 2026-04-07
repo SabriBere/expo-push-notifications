@@ -47,6 +47,10 @@ function usePushRegistration() {
 
   useEffect(() => {
     let isMounted = true;
+    const socketUrl = process.env.API_SOCKET;
+    const apiBaseUrl =
+      process.env.EXPO_PUBLIC_API_URL ??
+      socketUrl?.replace(/^ws:\/\//, "http://").replace(/:\d+$/, ":8000");
 
     async function registerDevice() {
       try {
@@ -56,6 +60,33 @@ function usePushRegistration() {
 
         setExpoPushToken(token);
         console.log("Expo push token:", token);
+        console.log("Expo push registration URL:", apiBaseUrl);
+
+        if (!apiBaseUrl) {
+          console.warn(
+            "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
+          );
+          return;
+        }
+
+        const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+          console.error(
+            "Error registering Expo push token in backend",
+            response.status,
+            await response.text()
+          );
+          return;
+        }
+
+        console.log("Expo push token registered in backend");
       } catch (error) {
         console.error("Error registering Expo push token", error);
       }
