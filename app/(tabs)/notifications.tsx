@@ -1,13 +1,12 @@
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { notificationsHistory } from '@/mocks/mockUpsAlert';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
-  //Mapear listado de notificaciones recibidas desde el socket
+  //Mapear listado de notificaciones recibidas desde la fuente de datos elegida
 
   return (
     <ParallaxScrollView
@@ -23,7 +22,7 @@ export default function HomeScreen() {
       </ThemedView>
       {/* Tarjeta con la información de notificación + combinación con deep linking c/expo router */}
       <View>
-        {notificationsHistory?.map((notif:any) => (
+        {/* {notificationsHistory?.map((notif:any) => (
           <Pressable
             key={notif.noticiaId}
             onPress={() =>
@@ -42,7 +41,7 @@ export default function HomeScreen() {
             </ThemedView>
           </Pressable>
           
-        ))}
+        ))} */}
       </View>
     </ParallaxScrollView>
   );
