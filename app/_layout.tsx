@@ -1,5 +1,4 @@
-import { registerForPushNotificationsAsync, registerNotificationActions } from "@/context/NotificationsUtils";
-import { SocketProvider } from "@/context/SocketContext";
+import { registerForPushNotificationsAsync, registerNotificationActions } from "@/utils/NotificationsUtils";
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -47,10 +46,7 @@ function usePushRegistration() {
 
   useEffect(() => {
     let isMounted = true;
-    const socketUrl = process.env.EXPO_PUBLIC_API_SOCKET;
-    const apiBaseUrl =
-      process.env.EXPO_PUBLIC_API_URL ??
-      socketUrl?.replace(/^ws:\/\//, "http://").replace(/:\d+$/, ":8000");
+    const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
 
     async function registerDevice() {
       try {
@@ -103,7 +99,7 @@ function usePushRegistration() {
 }
 
 export default function RootLayout() {
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient());
   const colorScheme = useColorScheme();
   useNotificationObserver();
   usePushRegistration();
@@ -111,15 +107,13 @@ export default function RootLayout() {
   return (
 
     <QueryClientProvider client={queryClient}>
-      <SocketProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </SocketProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

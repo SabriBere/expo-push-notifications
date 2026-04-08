@@ -1,6 +1,6 @@
 # TestNotifications
 
-Mobile application built with Expo and React Native to test the push notification flow, WebSocket event handling, and internal deep linking to a news detail screen.
+Mobile application built with Expo and React Native to test the push notification flow and internal deep linking to a news detail screen.
 
 ## Table of Contents
 
@@ -24,7 +24,6 @@ Mobile application built with Expo and React Native to test the push notificatio
 The goal of this application is to provide a technical playground for:
 
 - registering the device for Expo push notifications,
-- receiving updates from a backend through WebSocket,
 - triggering local notifications from those events,
 - navigating to a detail screen with `expo-router`.
 
@@ -39,8 +38,7 @@ The application currently includes:
 - a notifications list screen,
 - a news detail screen accessible through a dynamic route,
 - push permission and token registration,
-- initial backend integration to register the push token,
-- a `SocketProvider` to listen for events and update in-memory state.
+- initial backend integration to register the push token.
 
 ## Project Stack
 
@@ -94,7 +92,6 @@ The project uses environment variables defined in `.env`. A base example is avai
 
 Currently expected variables:
 
-- `EXPO_PUBLIC_API_SOCKET`: WebSocket server URL.
 - `EXPO_PUBLIC_API_URL`: base HTTP backend URL.
 - `EXPO_PUBLIC_EAS_PROJECT_ID`: EAS project identifier.
 - `GOOGLE_SERVICES_JSON`: path to the `google-services.json` file.
@@ -102,7 +99,6 @@ Currently expected variables:
 Example:
 
 ```env
-EXPO_PUBLIC_API_SOCKET=ws://localhost:8001
 EXPO_PUBLIC_EAS_PROJECT_ID=your-eas-project-id
 GOOGLE_SERVICES_JSON=./google-services.json
 EXPO_PUBLIC_API_URL=http://localhost:8000
@@ -238,7 +234,7 @@ Then open the installed development build on the device or emulator so it connec
 The application is currently prepared to integrate with two main external services:
 
 - an HTTP backend to register the push token,
-- a WebSocket backend to receive notification events.
+- Expo Push Notifications through the device and Expo services.
 
 Current behavior:
 
@@ -268,7 +264,7 @@ app/
 └── modal.tsx
 
 components/
-context/
+utils/
 assets/
 constants/
 hooks/
@@ -279,13 +275,12 @@ scripts/
 ### General Description
 
 - **`app/`**: contains the application routes defined with `expo-router`.
-- **`app/_layout.tsx`**: root layout. Initializes theme, `QueryClientProvider`, `SocketProvider`, and notification observers.
+- **`app/_layout.tsx`**: root layout. Initializes theme, `QueryClientProvider`, and notification observers.
 - **`app/(tabs)/_layout.tsx`**: defines tab navigation.
 - **`app/(tabs)/index.tsx`**: settings/demo screen.
 - **`app/(tabs)/notifications.tsx`**: notifications list screen.
 - **`app/news/[id].tsx`**: news detail screen through a dynamic route.
-- **`context/SocketContext.tsx`**: handles the WebSocket connection, reconnection logic, and cache updates.
-- **`context/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
+- **`utils/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
 - **`mocks/`**: mock data currently used by the list screen.
 - **`components/`**: reusable UI components.
 - **`constants/`**: theme and visual constants.
@@ -297,10 +292,8 @@ The notification flow currently implemented is:
 1. The app requests notification permissions on startup.
 2. If the device is physical and permissions are granted, it gets the Expo Push Token.
 3. The token is registered in the backend with `POST /push-tokens/register`.
-4. In parallel, the app opens a WebSocket connection.
-5. When socket events arrive, they are parsed and stored in React Query.
-6. If the payload contains notifications, local notifications are scheduled.
-7. When the user taps a notification, the app navigates to the news detail route `/news/[id]`.
+4. When a push notification reaches the device, Expo delivers the payload to the app.
+5. If the user taps a notification, the app navigates to the news detail route `/news/[id]`.
 
 There is also a notification action called `Mark as read`, already prepared to be extended with backend or local persistence logic.
 
