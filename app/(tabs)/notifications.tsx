@@ -1,13 +1,27 @@
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { notificationsHistory } from '@/mocks/mockUpsAlert';
+import { getAllNews } from '@/services/newsServices';
+import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+type NewsItem = {
+  Title: string;
+  Media: string;
+  Section: string;
+  NoticiaId: number;
+  ConsultasId: number;
+};
+
 export default function HomeScreen() {
-  //Mapear listado de notificaciones recibidas desde el socket
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: getAllNews,
+  });
+
+  const notifications = (data?.data ?? []) as NewsItem[];
 
   return (
     <ParallaxScrollView
@@ -21,11 +35,22 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
       </ThemedView>
-      {/* Tarjeta con la información de notificación + combinación con deep linking c/expo router */}
       <View>
-        {notificationsHistory?.map((notif:any) => (
+        {isLoading ? (
+          <ThemedText>Cargando notificaciones...</ThemedText>
+        ) : null}
+
+        {isError ? (
+          <ThemedText>No se pudieron cargar las notificaciones.</ThemedText>
+        ) : null}
+
+        {!isLoading && !isError && notifications.length === 0 ? (
+          <ThemedText>No hay notificaciones disponibles.</ThemedText>
+        ) : null}
+
+        {notifications?.map((notif) => (
           <Pressable
-            key={notif.noticiaId}
+            key={notif.NoticiaId}
             onPress={() =>
               router.push({
                 pathname: '/news/[id]',
@@ -36,12 +61,11 @@ export default function HomeScreen() {
               })
             }
           >
-            <ThemedView key={notif.noticiaId} style={styles.cardContainer}>
+            <ThemedView style={styles.cardContainer}>
               <ThemedText>{`${notif.Media} | ${notif.Section}`}</ThemedText>
               <ThemedText type="subtitle">{notif.Title}</ThemedText>
             </ThemedView>
           </Pressable>
-          
         ))}
       </View>
     </ParallaxScrollView>

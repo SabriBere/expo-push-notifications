@@ -1,50 +1,323 @@
-# Welcome to your Expo app 👋
+# TestNotifications
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile application built with Expo and React Native to test the push notification flow and internal deep linking to a news detail screen.
 
-## Get started
+## Table of Contents
 
-1. Install dependencies
+- [Project Goal](#project-goal)
+- [Current Scope](#current-scope)
+- [Project Stack](#project-stack)
+- [Main Dependencies](#main-dependencies)
+- [Prerequisites](#prerequisites)
+- [Environment Variables](#environment-variables)
+- [Installation](#installation)
+- [Available Scripts](#available-scripts)
+- [Prebuild and EAS Builds](#prebuild-and-eas-builds)
+- [Environments and Integration](#environments-and-integration)
+- [Architecture](#architecture)
+- [Notification Flow](#notification-flow)
+- [Formatting Configuration](#formatting-configuration)
+- [Notes and Pending Items](#notes-and-pending-items)
 
-   ```bash
-   npm install
-   ```
+## Project Goal
 
-2. Start the app
+The goal of this application is to provide a technical playground for:
 
-   ```bash
-   npx expo start
-   ```
+- registering the device for Expo push notifications,
+- triggering local notifications from those events,
+- navigating to a detail screen with `expo-router`.
 
-In the output, you'll find options to open the app in a
+At the moment, the project works as an experimentation and technical validation environment for the full notification flow.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Current Scope
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The application currently includes:
 
-## Get a fresh project
+- a tab-based navigation structure using `expo-router`,
+- a settings or demo screen,
+- a notifications list screen,
+- a news detail screen accessible through a dynamic route,
+- push permission and token registration,
+- initial backend integration to register the push token.
 
-When you're ready, run:
+## Project Stack
 
-```bash
-npm run reset-project
+The current stack used in the project is:
+
+- **Language:** TypeScript
+- **Main framework:** React Native
+- **Runtime / tooling:** Expo
+- **Navigation:** Expo Router
+- **Async data state:** TanStack Query
+- **Notifications:** Expo Notifications
+- **Target platforms:** Android, iOS, and Web
+- **Linting / formatting:** ESLint + Prettier
+
+Relevant versions currently defined in the project:
+
+- `expo`: `~54.0.33`
+- `react`: `19.1.0`
+- `react-native`: `0.81.5`
+- `typescript`: `~5.9.2`
+
+## Main Dependencies
+
+Some of the most important dependencies in this repository are:
+
+- **expo-router:** handles file-based navigation.
+- **expo-notifications:** manages permissions, categories, actions, and local/push notifications.
+- **@tanstack/react-query:** provides caching and async data updates.
+- **expo-dev-client:** enables development builds closer to a real native environment.
+- **react-native-reanimated:** supports animations and part of the Expo Router base stack.
+- **expo-image:** optimized image rendering.
+
+For the full dependency list, check `package.json`.
+
+## Prerequisites
+
+Before running the project locally, make sure you have:
+
+- Node.js installed
+- npm installed
+- Android Studio if you want to run the Android emulator
+- Xcode if you want to run the iOS simulator
+- Expo CLI available through `npx expo`
+- a physical device to validate real push notification behavior
+
+> **Important:** Expo Push Notifications do not fully work in simulators for every scenario. To validate the real push token and device notification flow, use a physical device.
+
+## Environment Variables
+
+The project uses environment variables defined in `.env`. A base example is available in `.env.example`.
+
+Currently expected variables:
+
+- `EXPO_PUBLIC_API_URL`: base HTTP backend URL.
+- `EXPO_PUBLIC_EAS_PROJECT_ID`: EAS project identifier.
+- `GOOGLE_SERVICES_JSON`: path to the `google-services.json` file.
+
+Example:
+
+```env
+EXPO_PUBLIC_EAS_PROJECT_ID=your-eas-project-id
+GOOGLE_SERVICES_JSON=./google-services.json
+EXPO_PUBLIC_API_URL=http://localhost:8000
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Installation
 
-## Learn more
+### 1. Clone the repository
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+git clone <repository-url>
+cd TestNotifications
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 2. Install dependencies
 
-## Join the community
+```bash
+npm install
+```
 
-Join our community of developers creating universal apps.
+### 3. Configure environment variables
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Create a `.env` file based on `.env.example` and fill in the values for your environment.
+
+### 4. Start the application
+
+```bash
+npm run start
+```
+
+Expo will open the interactive development panel, from which you can run the app in:
+
+- Android emulator
+- iOS simulator
+- development build
+- Web
+
+## Available Scripts
+
+The scripts currently defined in `package.json` are:
+
+### `npm run start`
+
+Starts the Expo development server.
+
+### `npm run start:dev-client`
+
+Starts the Expo bundler in development-client mode. Use this when running a development APK created with EAS.
+
+### `npm run android`
+
+Starts the project directly on Android.
+
+### `npm run ios`
+
+Starts the project directly on iOS.
+
+### `npm run web`
+
+Starts the web version of the project.
+
+### `npm run lint`
+
+Runs the lint process configured by Expo.
+
+### `npm run prebuild`
+
+Generates the native `android/` and `ios/` folders from the Expo configuration.
+
+### `npm run build:android:development`
+
+Creates an Android development build in EAS using the `development` profile.
+
+### `npm run build:android:preview`
+
+Creates an Android internal preview build in EAS using the `preview` profile.
+
+### `npm run build:android:production`
+
+Creates an Android production build in EAS using the `production` profile.
+
+## Prebuild and EAS Builds
+
+If you need native Android or iOS folders generated locally, you can run:
+
+```bash
+npm run prebuild
+```
+
+This command generates the native `android/` and `ios/` projects from the Expo configuration.
+
+If you want to create a cloud build with Expo Application Services, use EAS:
+
+```bash
+npm run build:android:development
+```
+
+You can also use the other profiles currently defined in `eas.json`:
+
+```bash
+npm run build:android:preview
+npm run build:android:production
+```
+
+### Running the generated APK
+
+Once the Android build finishes in EAS, Expo provides a download link for the generated artifact.
+
+You can run the `.apk` in one of these ways:
+
+- download it from the EAS build page and install it manually on an Android device,
+- open the artifact link from the Android device and install it from there,
+- download it locally and install it on an emulator or connected device with:
+
+```bash
+adb install path/to/your-app.apk
+```
+
+If the APK was created with the `development` profile, after installing it you should start the local bundler with:
+
+```bash
+npm run start:dev-client
+```
+
+Then open the installed development build on the device or emulator so it connects to the local Metro server.
+
+> **Note:** the `development` and `preview` profiles are configured for internal distribution, which is the usual flow for testing APKs outside the stores.
+>
+> The project scripts use `npx eas-cli`, so a global `eas` installation is not required.
+
+## Environments and Integration
+
+The application is currently prepared to integrate with two main external services:
+
+- an HTTP backend to register the push token,
+- Expo Push Notifications through the device and Expo services.
+
+Current behavior:
+
+- push token registration is sent to `EXPO_PUBLIC_API_URL` using the `/push-tokens/register` endpoint,
+- the project includes EAS configuration in `eas.json`,
+- Android can load `google-services.json` from the `GOOGLE_SERVICES_JSON` variable.
+
+Build profiles currently defined in `eas.json`:
+
+- `development`
+- `preview`
+- `production`
+
+## Architecture
+
+The main project structure is:
+
+```text
+app/
+├── (tabs)/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   └── notifications.tsx
+├── news/
+│   └── [id].tsx
+├── _layout.tsx
+└── modal.tsx
+
+components/
+utils/
+assets/
+constants/
+hooks/
+mocks/
+scripts/
+```
+
+### General Description
+
+- **`app/`**: contains the application routes defined with `expo-router`.
+- **`app/_layout.tsx`**: root layout. Initializes theme, `QueryClientProvider`, and notification observers.
+- **`app/(tabs)/_layout.tsx`**: defines tab navigation.
+- **`app/(tabs)/index.tsx`**: settings/demo screen.
+- **`app/(tabs)/notifications.tsx`**: notifications list screen.
+- **`app/news/[id].tsx`**: news detail screen through a dynamic route.
+- **`utils/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
+- **`mocks/`**: mock data currently used by the list screen.
+- **`components/`**: reusable UI components.
+- **`constants/`**: theme and visual constants.
+
+## Notification Flow
+
+The notification flow currently implemented is:
+
+1. The app requests notification permissions on startup.
+2. If the device is physical and permissions are granted, it gets the Expo Push Token.
+3. The token is registered in the backend with `POST /push-tokens/register`.
+4. When a push notification reaches the device, Expo delivers the payload to the app.
+5. If the user taps a notification, the app navigates to the news detail route `/news/[id]`.
+
+There is also a notification action called `Mark as read`, already prepared to be extended with backend or local persistence logic.
+
+## Formatting Configuration
+
+The project includes basic code quality tools:
+
+- **ESLint:** configured in `eslint.config.js`
+- **Prettier:** configured in `.prettierrc`
+
+It is recommended to run `npm run lint` before pushing changes.
+
+## Notes and Pending Items
+
+There are a few important points to keep in mind about the current state of the project:
+
+- The notifications screen still uses mocks instead of the data already cached in React Query.
+- The original Expo README was replaced with this project-specific documentation.
+- There are no testing scripts defined yet in `package.json`.
+
+## Useful References
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Expo Notifications](https://docs.expo.dev/push-notifications/overview/)
+- [React Native](https://reactnative.dev/)
+- [TanStack Query](https://tanstack.com/query/latest)
