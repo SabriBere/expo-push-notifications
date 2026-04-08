@@ -12,6 +12,7 @@ Mobile application built with Expo and React Native to test the push notificatio
 - [Environment Variables](#environment-variables)
 - [Installation](#installation)
 - [Available Scripts](#available-scripts)
+- [Prebuild and EAS Builds](#prebuild-and-eas-builds)
 - [Environments and Integration](#environments-and-integration)
 - [Architecture](#architecture)
 - [Notification Flow](#notification-flow)
@@ -147,6 +148,10 @@ The scripts currently defined in `package.json` are:
 
 Starts the Expo development server.
 
+### `npm run start:dev-client`
+
+Starts the Expo bundler in development-client mode. Use this when running a development APK created with EAS.
+
 ### `npm run android`
 
 Starts the project directly on Android.
@@ -162,6 +167,71 @@ Starts the web version of the project.
 ### `npm run lint`
 
 Runs the lint process configured by Expo.
+
+### `npm run prebuild`
+
+Generates the native `android/` and `ios/` folders from the Expo configuration.
+
+### `npm run build:android:development`
+
+Creates an Android development build in EAS using the `development` profile.
+
+### `npm run build:android:preview`
+
+Creates an Android internal preview build in EAS using the `preview` profile.
+
+### `npm run build:android:production`
+
+Creates an Android production build in EAS using the `production` profile.
+
+## Prebuild and EAS Builds
+
+If you need native Android or iOS folders generated locally, you can run:
+
+```bash
+npm run prebuild
+```
+
+This command generates the native `android/` and `ios/` projects from the Expo configuration.
+
+If you want to create a cloud build with Expo Application Services, use EAS:
+
+```bash
+npm run build:android:development
+```
+
+You can also use the other profiles currently defined in `eas.json`:
+
+```bash
+npm run build:android:preview
+npm run build:android:production
+```
+
+### Running the generated APK
+
+Once the Android build finishes in EAS, Expo provides a download link for the generated artifact.
+
+You can run the `.apk` in one of these ways:
+
+- download it from the EAS build page and install it manually on an Android device,
+- open the artifact link from the Android device and install it from there,
+- download it locally and install it on an emulator or connected device with:
+
+```bash
+adb install path/to/your-app.apk
+```
+
+If the APK was created with the `development` profile, after installing it you should start the local bundler with:
+
+```bash
+npm run start:dev-client
+```
+
+Then open the installed development build on the device or emulator so it connects to the local Metro server.
+
+> **Note:** the `development` and `preview` profiles are configured for internal distribution, which is the usual flow for testing APKs outside the stores.
+>
+> The project scripts use `npx eas-cli`, so a global `eas` installation is not required.
 
 ## Environments and Integration
 

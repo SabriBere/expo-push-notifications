@@ -1,5 +1,7 @@
 module.exports = () => {
-  const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID;
+  const projectId =
+    process.env.EXPO_PUBLIC_EAS_PROJECT_ID ??
+    "4eabd014-afb6-4f98-a786-686be27b4bfb";
   const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
 
   return {
