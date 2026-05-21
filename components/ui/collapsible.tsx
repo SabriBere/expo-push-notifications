@@ -1,6 +1,8 @@
 import { ThemedView } from '@/components/themed-view';
+import { useExpoPushToken } from '@/contexts/PushTokenContext';
+import { registerForPushNotificationsAsync } from '@/utils/NotificationsUtils';
 import * as Notifications from 'expo-notifications';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AppState,
@@ -21,23 +23,46 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export function Collapsible() {
+type CollapsibleProps = {
+  children?: ReactNode;
+  title?: string;
+};
+
+export function Collapsible(_props: CollapsibleProps) {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
+  const { expoPushToken, setExpoPushToken } = useExpoPushToken();
   const appState = useRef(AppState.currentState);
 
   async function checkSystemPermissions() {
     const settings = await Notifications.getPermissionsAsync();
     setSystemNotificationsEnabled(settings.granted);
+
+    if (!settings.granted) {
+      setExpoPushToken(null);
+    }
+
     return settings;
   }
 
+  async function restoreExpoPushTokenIfEnabled() {
+    const settings = await checkSystemPermissions();
+    if (!settings.granted) return;
+
+    try {
+      const token = await registerForPushNotificationsAsync();
+      if (token) setExpoPushToken(token);
+    } catch (error) {
+      console.error("Error restoring Expo push token", error);
+    }
+  }
+
   useEffect(() => {
-    checkSystemPermissions();
+    restoreExpoPushTokenIfEnabled();
 
     const subscription = AppState.addEventListener('change', async (nextState) => {
       if (appState.current.match(/inactive|background/) && nextState === 'active') {
-        await checkSystemPermissions();
+        await restoreExpoPushTokenIfEnabled();
       }
 
       appState.current = nextState;
@@ -49,12 +74,63 @@ export function Collapsible() {
   }, []);
 
   //Permite activar/desactivar notificaciones push
-  async function triggerSettingsPermissions() {
+  async function registerDeviceToken() {
+    try {
+      const token = await registerForPushNotificationsAsync();
+      const settings = await checkSystemPermissions();
+
+      if (!token) {
+        setExpoPushToken(null);
+        setSystemNotificationsEnabled(settings.granted);
+        return;
+      }
+
+      setExpoPushToken(token);
+      setSystemNotificationsEnabled(true);
+      console.log("Expo push token:", token);
+
+      const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
+      console.log("Expo push registration URL:", apiBaseUrl);
+
+      if (!apiBaseUrl) {
+        console.warn(
+          "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
+        );
+        return;
+      }
+
+      const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!response.ok) {
+        console.error(
+          "Error registering Expo push token in backend",
+          response.status,
+          await response.text()
+        );
+        return;
+      }
+
+      console.log("Expo push token registered in backend");
+    } catch (error) {
+      console.error("Error registering Expo push token", error);
+    }
+  }
+
+  async function triggerSettingsPermissions(value: boolean) {
+    if (value) {
+      await registerDeviceToken();
+      return;
+    }
+
     Alert.alert(
       'Notificaciones',
-      systemNotificationsEnabled
-        ? 'Para desactivar las notificaciones debes hacerlo desde la configuración del sistema.'
-        : 'Para activar las notificaciones debes hacerlo desde permisos o configuración del sistema.',
+      'Para desactivar las notificaciones debes hacerlo desde la configuración del sistema.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -112,6 +188,15 @@ export function Collapsible() {
           onValueChange={sendUnsuscribeAlerts}
         />
       </View>
+
+      {systemNotificationsEnabled && expoPushToken ? (
+        <View style={styles.tokenCard}>
+          <Text style={styles.title}>ExpoPushToken generado</Text>
+          <Text selectable style={styles.tokenText}>
+            {expoPushToken}
+          </Text>
+        </View>
+      ) : null}
     </ThemedView>
   );
 }
@@ -154,5 +239,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+  },
+  tokenCard: {
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    borderRadius: 12,
+    padding: 16,
+    gap: 10,
+  },
+  tokenText: {
+    color: '#ddd',
+    fontSize: 13,
+    fontWeight: '400',
+    lineHeight: 18,
   },
 });
