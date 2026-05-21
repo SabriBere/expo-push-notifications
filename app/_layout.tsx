@@ -1,17 +1,51 @@
-import { registerForPushNotificationsAsync, registerNotificationActions } from "@/utils/NotificationsUtils";
+import { registerNotificationActions } from "@/utils/NotificationsUtils";
+import { PushTokenProvider } from "@/contexts/PushTokenContext";
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from 'expo-notifications';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'react-native-reanimated';
 
 type NotificationData = {
-  url?: any;
-  params: any
+  url?: string;
+  params?: {
+    id?: number | string;
+    consultasId?: number | string;
+  };
+  NoticiaId?: number | string;
+  ConsultasId?: number | string;
+  TipoConsultaId?: number;
+  TipoNotificacion?: number | string;
+  EPais?: number;
+  PautaId?: number;
+  UserName?: string;
 };
+
+function getNewsIdFromUrl(url?: string) {
+  const match = url?.match(/\/news\/([^/?]+)/);
+  return match?.[1];
+}
+
+function openNotificationDetail(data: NotificationData) {
+  const noticiaId = data.params?.id ?? data.NoticiaId ?? getNewsIdFromUrl(data.url);
+  const consultasId = data.params?.consultasId ?? data.ConsultasId;
+
+  if (!noticiaId) {
+    console.warn("La notificación no tiene NoticiaId para navegar al detalle", data);
+    return;
+  }
+
+  router.push({
+    pathname: '/news/[id]',
+    params: {
+      id: String(noticiaId),
+      ...(consultasId ? { consultasId: String(consultasId) } : {}),
+    },
+  });
+}
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -19,101 +53,68 @@ export const unstable_settings = {
 
 //Manejo de deep linking
 function useNotificationObserver() {
+  const handledNotificationId = useRef<string | null>(null);
 
   useEffect(() => {
     registerNotificationActions();
-    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
-      const data = response.notification.request.content.data as NotificationData;
-      const url = data.url;
-      const { consultasId } = data.params
 
-      if (url) {
-        router.push({
-          pathname: url,
-          params: {
-            consultasId: consultasId,
-          },
-        })
+    function handleNotificationResponse(response: Notifications.NotificationResponse) {
+      const notificationId = response.notification.request.identifier;
+
+      if (handledNotificationId.current === notificationId) {
+        return;
+      }
+
+      handledNotificationId.current = notificationId;
+
+      const data = response.notification.request.content.data as NotificationData;
+      console.log("JSON recibido al tocar la notificación:", JSON.stringify(data, null, 2));
+      console.log("Respuesta completa de la notificación:", JSON.stringify(response, null, 2));
+      openNotificationDetail(data);
+      void Notifications.clearLastNotificationResponseAsync();
+    }
+
+    const notificationSubscription = Notifications.addNotificationReceivedListener((notification) => {
+      const data = notification.request.content.data;
+      console.log("JSON recibido con la app abierta:", JSON.stringify(data, null, 2));
+      console.log("Notificación completa recibida:", JSON.stringify(notification, null, 2));
+    });
+
+    const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      handleNotificationResponse(response);
+    });
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (response) {
+        console.log("JSON recibido al abrir la app desde la notificación:", JSON.stringify(response.notification.request.content.data, null, 2));
+        handleNotificationResponse(response);
       }
     });
 
-    return () => subscription.remove();
-  }, []);
-}
-
-function usePushRegistration() {
-  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
-
-    async function registerDevice() {
-      try {
-        const token = await registerForPushNotificationsAsync();
-
-        if (!isMounted || !token) return;
-
-        setExpoPushToken(token);
-        console.log("Expo push token:", token);
-        console.log("Expo push registration URL:", apiBaseUrl);
-
-        if (!apiBaseUrl) {
-          console.warn(
-            "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
-          );
-          return;
-        }
-
-        const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        if (!response.ok) {
-          console.error(
-            "Error registering Expo push token in backend",
-            response.status,
-            await response.text()
-          );
-          return;
-        }
-
-        console.log("Expo push token registered in backend");
-      } catch (error) {
-        console.error("Error registering Expo push token", error);
-      }
-    }
-
-    registerDevice();
-
     return () => {
-      isMounted = false;
+      notificationSubscription.remove();
+      responseSubscription.remove();
     };
   }, []);
-
-  return expoPushToken;
 }
 
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient());
   const colorScheme = useColorScheme();
   useNotificationObserver();
-  usePushRegistration();
 
   return (
 
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <PushTokenProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </PushTokenProvider>
     </QueryClientProvider>
   );
 }
