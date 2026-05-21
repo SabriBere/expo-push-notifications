@@ -1,4 +1,5 @@
-import { registerForPushNotificationsAsync, registerNotificationActions } from "@/utils/NotificationsUtils";
+import { registerNotificationActions } from "@/utils/NotificationsUtils";
+import { PushTokenProvider } from "@/contexts/PushTokenContext";
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -97,79 +98,23 @@ function useNotificationObserver() {
   }, []);
 }
 
-function usePushRegistration() {
-  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
-
-    async function registerDevice() {
-      try {
-        const token = await registerForPushNotificationsAsync();
-
-        if (!isMounted || !token) return;
-
-        setExpoPushToken(token);
-        console.log("Expo push token:", token);
-        console.log("Expo push registration URL:", apiBaseUrl);
-
-        if (!apiBaseUrl) {
-          console.warn(
-            "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
-          );
-          return;
-        }
-
-        const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        if (!response.ok) {
-          console.error(
-            "Error registering Expo push token in backend",
-            response.status,
-            await response.text()
-          );
-          return;
-        }
-
-        console.log("Expo push token registered in backend");
-      } catch (error) {
-        console.error("Error registering Expo push token", error);
-      }
-    }
-
-    registerDevice();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return expoPushToken;
-}
-
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient());
   const colorScheme = useColorScheme();
   useNotificationObserver();
-  usePushRegistration();
 
   return (
 
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <PushTokenProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </PushTokenProvider>
     </QueryClientProvider>
   );
 }
