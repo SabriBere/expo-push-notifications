@@ -7,7 +7,6 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ["dist/*"],
-    plugins: ["react", "@typescript-eslint", "prettier"],
     rules: {
       "no-var": 2,
       eqeqeq: 2,
