@@ -13,8 +13,18 @@ interface NotificationItem {
 }
 
 type NotificationData = {
-  url?: any;
-  params: any
+  url?: string;
+  params?: {
+    id?: number;
+    consultasId?: number;
+  };
+  NoticiaId?: number;
+  ConsultasId?: number;
+  TipoConsultaId?: number;
+  TipoNotificacion?: number | string;
+  EPais?: number;
+  PautaId?: number;
+  UserName?: string;
 };
 
 Notifications.setNotificationHandler({
@@ -116,14 +126,13 @@ export function listenNotificationActions() {
   return Notifications.addNotificationResponseReceivedListener(async (response) => {
     const actionId = response.actionIdentifier;
     const data = response.notification.request.content.data as NotificationData;
-    const url = data.url;
-    const { consultasId } = data.params
+    console.log("JSON recibido en la notificación:", JSON.stringify(data, null, 2));
+    const noticiaId = data.params?.id ?? data.NoticiaId;
+    const consultasId = data.params?.consultasId ?? data.ConsultasId;
+    const url = data.url ?? (noticiaId ? `/news/${noticiaId}` : undefined);
 
     // Acción custom: marcar como leído
     if (actionId === ACTION_MARK_AS_READ) {
-      const noticiaId = data?.params?.id;
-      const consultasId = data?.params?.consultasId;
-
       console.log("Marcar como leído:", { noticiaId, consultasId });
 
       // Acá podés:
@@ -172,14 +181,22 @@ export async function triggerPushNotifications(
         break;
     }
 
+    const url = `/news/${notif.NoticiaId}`;
+    const notificationDetails = [
+      notif.Title,
+      `Noticia: ${notif.NoticiaId}`,
+      `Consulta: ${notif.ConsultasId}`,
+      `URL: ${url}`,
+    ].join("\n");
+
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Test Notification',
+        title: `${icon} ${notif.Media}`,
         subtitle: `${icon} ${notif.Media} ${notif.Section}`,
-        body: notif.Title,
+        body: notificationDetails,
         categoryIdentifier: NEWS_CATEGORY_ID,
         data: {
-          url: `/news/${notif.NoticiaId}`,
+          url,
           params: {
             id: notif.NoticiaId,
             consultasId: notif.ConsultasId
