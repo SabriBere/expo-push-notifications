@@ -1,4 +1,4 @@
-name: Production CI
+name: Android APK CI
 
 on:
   push:
@@ -26,19 +26,10 @@ jobs:
         run: npm run typecheck
 
   build_android:
-    name: Build Android
+    name: Build Android APK
     needs: [validate]
     if: ${{ github.event_name != 'pull_request' }}
     type: build
     params:
       platform: android
-      profile: production
-
-  build_ios:
-    name: Build iOS
-    needs: [validate]
-    if: ${{ github.event_name != 'pull_request' }}
-    type: build
-    params:
-      platform: ios
-      profile: production
+      profile: preview

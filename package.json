@@ -14,7 +14,7 @@
     "build:android:development": "npx eas-cli build --platform android --profile development",
     "build:android:preview": "npx eas-cli build --platform android --profile preview",
     "build:android:production": "npx eas-cli build --platform android --profile production",
-    "workflow:production": "npx eas-cli workflow:run .eas/workflows/create-production-builds.yml"
+    "workflow:android:apk": "npx eas-cli workflow:run .eas/workflows/create-production-builds.yml"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
