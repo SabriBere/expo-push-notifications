@@ -282,6 +282,41 @@ Then open the installed development build on the device or emulator so it connec
 >
 > The project scripts use `npx eas-cli`, so a global `eas` installation is not required.
 
+## Branching and Deployment Model
+
+The repository is intended to use a simple branch model:
+
+- `feature/*`, `fix/*`, or similar short-lived branches are used for daily work.
+- `develop` is the integration branch. Merge feature branches here when the work should be validated but not deployed.
+- `main` is the deployment branch. Merging or pushing into `main` triggers the production build workflow.
+
+Current EAS workflow behavior:
+
+- Pull requests into `develop` run lint and TypeScript checks only.
+- Pushes to `develop` run lint and TypeScript checks only.
+- Pull requests into `main` run lint and TypeScript checks only.
+- Pushes to `main` run lint, TypeScript checks, and then the Android build.
+
+Suggested flow:
+
+```bash
+git checkout develop
+git pull
+git checkout -b feature/my-change
+
+# Commit work, then open a PR into develop.
+# When develop is ready to ship, open a PR from develop into main.
+```
+
+If `develop` does not exist yet, create it once from the current `main`:
+
+```bash
+git checkout main
+git pull
+git checkout -b develop
+git push -u origin develop
+```
+
 ## Environments and Integration
 
 The application is currently prepared to integrate with two main external services:
