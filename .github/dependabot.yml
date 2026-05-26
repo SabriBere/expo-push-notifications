@@ -8,6 +8,19 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     groups:
-      npm-dependencies:
+      safe-dependencies:
         patterns:
-          - "*"
+          - "@tanstack/*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "expo-router"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "react-native"
+      - dependency-name: "eslint"
+      - dependency-name: "eslint-config-expo"
+      - dependency-name: "typescript"

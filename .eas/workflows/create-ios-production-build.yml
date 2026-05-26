@@ -1,14 +1,6 @@
-name: Android CI
+name: iOS Production CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch: {}
 
 concurrency:
@@ -27,11 +19,10 @@ jobs:
       - name: Run TypeScript check
         run: npm run typecheck
 
-  build_android:
-    name: Build Android APK from main
-    needs: [validate]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    type: build
-    params:
-      platform: android
-      profile: preview
+  # build_ios:
+  #   name: Build iOS production app
+  #   needs: [validate]
+  #   type: build
+  #   params:
+  #     platform: ios
+  #     profile: production
