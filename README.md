@@ -297,6 +297,16 @@ Current EAS workflow behavior:
 - Pull requests into `main` run lint and TypeScript checks only.
 - Pushes to `main` run lint, TypeScript checks, and then the Android build.
 
+The GitHub Actions deploy workflow sends an email after the `main` deploy finishes. Configure these repository secrets before using it:
+
+- `EAS_TOKEN`: Expo access token used by the EAS build command.
+- `SMTP_SERVER`: SMTP server address.
+- `SMTP_PORT`: SMTP server port.
+- `SMTP_USERNAME`: SMTP username.
+- `SMTP_PASSWORD`: SMTP password.
+- `SMTP_FROM`: sender email address.
+- `SMTP_TO`: destination email address.
+
 Suggested flow:
 
 ```bash
