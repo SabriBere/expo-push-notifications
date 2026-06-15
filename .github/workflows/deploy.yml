@@ -16,8 +16,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  branch-modeling:
+    name: Validate branch model
+    runs-on: ubuntu-latest
+    steps:
+      - name: Allow only develop into main
+        if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'develop' }}
+        run: |
+          echo "Solo se permite mergear develop hacia main."
+          echo "Branch origen: ${{ github.head_ref }}"
+          echo "Branch destino: ${{ github.base_ref }}"
+          exit 1
+
+      - name: Confirm branch model
+        run: echo "Branch model OK."
+
   validate:
     name: Validate project
+    needs: branch-modeling
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
