@@ -20,6 +20,8 @@ jobs:
         run: npm run lint
       - name: Run TypeScript check
         run: npm run typecheck
+      - name: Run Android prebuild
+        run: npm run prebuild:android
 
   build_android:
     name: Build Android APK from main
