@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
-  workflow_dispatch: {}
 
 concurrency:
   cancel_in_progress: true
@@ -30,7 +24,6 @@ jobs:
   build_android:
     name: Build Android APK from main
     needs: [validate]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     type: build
     params:
       platform: android

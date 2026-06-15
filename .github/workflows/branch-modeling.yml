@@ -1,0 +1,38 @@
+name: Branch Modeling
+
+on:
+  pull_request:
+    branches:
+      - main
+  delete:
+  workflow_dispatch:
+
+jobs:
+  validate-main-source:
+    name: Validate main source branch
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Allow only develop into main
+        if: ${{ github.head_ref != 'develop' }}
+        run: |
+          echo "Solo se permite mergear develop hacia main."
+          echo "Branch origen: ${{ github.head_ref }}"
+          echo "Branch destino: ${{ github.base_ref }}"
+          exit 1
+
+      - name: Confirm develop to main
+        if: ${{ github.head_ref == 'develop' }}
+        run: |
+          echo "Branch model OK: develop -> main."
+
+  protect-long-lived-branches:
+    name: Protect main and develop from deletion
+    if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' && (github.event.ref == 'main' || github.event.ref == 'develop') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail protected branch deletion
+        run: |
+          echo "No se debe borrar la branch protegida: ${{ github.event.ref }}"
+          echo "Configura branch protection/rulesets para bloquear el borrado antes de que ocurra."
+          exit 1

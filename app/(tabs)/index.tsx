@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -6,6 +7,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+
+const appVersion = Constants.expoConfig?.version ?? 'dev';
 
 export default function TabTwoScreen() {
   return (
@@ -29,6 +32,7 @@ export default function TabTwoScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedText>Esta aplicación incluye un ejemplo de código para demo de notificaciones</ThemedText>
+      <ThemedText type="defaultSemiBold">Versión APK {appVersion}</ThemedText>
       <Collapsible title="Botones de prueba">
         <ThemedText>
           This app has two screens:{' '}
