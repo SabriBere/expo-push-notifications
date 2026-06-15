@@ -1,3 +1,14 @@
+const { version: appVersion } = require("./package.json");
+
+function getAndroidVersionCode(version) {
+  const [coreVersion] = version.split("-");
+  const [major = 0, minor = 0, patch = 0] = coreVersion
+    .split(".")
+    .map((value) => Number.parseInt(value, 10) || 0);
+
+  return major * 10000 + minor * 100 + patch;
+}
+
 module.exports = () => {
   const projectId =
     process.env.EXPO_PUBLIC_EAS_PROJECT_ID ??
@@ -10,7 +21,7 @@ module.exports = () => {
     name: "TestNotifications",
     slug: "testnotifications",
     owner: "sabrinademetrios-organization",
-    version: "1.0.0",
+    version: appVersion,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "testnotifications",
@@ -25,6 +36,7 @@ module.exports = () => {
     },
     android: {
       package: "com.sdemetrio.testnotifications",
+      versionCode: getAndroidVersionCode(appVersion),
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
