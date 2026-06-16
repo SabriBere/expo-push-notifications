@@ -92,11 +92,23 @@ El profile `preview` esta configurado en `eas.json` para generar un APK.
 
 ## Resumen de responsabilidades
 
-| Archivo | Plataforma | Cuando corre | Responsabilidad |
-| --- | --- | --- | --- |
-| `.github/workflows/deploy.yml` | GitHub Actions | PRs a `main`/`develop`, push a `develop` | Validar lint y TypeScript |
-| `.github/workflows/branch-modeling.yml` | GitHub Actions | PRs a `main`/`develop`, delete, manual | Controlar la politica `develop -> main` y borrar ramas temporales mergeadas |
-| `.eas/workflows/create-production-builds.yml` | Expo/EAS | push a `main` | Validar, prebuild Android y generar APK |
+### `.github/workflows/deploy.yml`
+
+- Plataforma: GitHub Actions.
+- Corre en: PRs a `main` o `develop`, y push a `develop`.
+- Responsabilidad: validar lint y TypeScript.
+
+### `.github/workflows/branch-modeling.yml`
+
+- Plataforma: GitHub Actions.
+- Corre en: PRs a `main` o `develop`, eventos `delete` y ejecucion manual.
+- Responsabilidad: controlar la politica `develop -> main` y borrar ramas temporales mergeadas.
+
+### `.eas/workflows/create-production-builds.yml`
+
+- Plataforma: Expo/EAS.
+- Corre en: push a `main`.
+- Responsabilidad: validar, ejecutar prebuild Android y generar el APK.
 
 ## Comandos relacionados
 
