@@ -45,11 +45,11 @@ async function ensureNotificationPermissions() {
   if (!settings.granted) {
     if (!settings.canAskAgain) {
       Alert.alert(
-        "Notificaciones desactivadas",
-        "Tenés que habilitarlas desde ajustes.",
+        "Notifications disabled",
+        "You need to enable them from settings.",
         [
-          { text: "Cancelar", style: "cancel" },
-          { text: "Abrir ajustes", onPress: () => Linking.openSettings() },
+          { text: "Cancel", style: "cancel" },
+          { text: "Open settings", onPress: () => Linking.openSettings() },
         ]
       );
       return false;
