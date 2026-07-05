@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate-main-source:
@@ -25,9 +25,9 @@ jobs:
       - name: Allow only develop into main
         if: ${{ github.head_ref != 'develop' }}
         run: |
-          echo "Solo se permite mergear develop hacia main."
-          echo "Branch origen: ${{ github.head_ref }}"
-          echo "Branch destino: ${{ github.base_ref }}"
+          echo "Only develop can be merged into main."
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
           exit 1
 
       - name: Confirm develop to main
@@ -37,6 +37,8 @@ jobs:
 
   delete-merged-branch:
     name: Delete merged branch
+    permissions:
+      contents: write
     if: >-
       ${{
         github.event_name == 'pull_request' &&
@@ -69,6 +71,6 @@ jobs:
     steps:
       - name: Fail protected branch deletion
         run: |
-          echo "No se debe borrar la branch protegida: ${{ github.event.ref }}"
-          echo "Configura branch protection/rulesets para bloquear el borrado antes de que ocurra."
+          echo "Protected branch should not be deleted: ${{ github.event.ref }}"
+          echo "Configure branch protection/rulesets to block deletion before it happens."
           exit 1
