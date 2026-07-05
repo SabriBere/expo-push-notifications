@@ -301,7 +301,7 @@ Responsibilities:
 - `.github/workflows/branch-modeling.yml`: enforces the `develop -> main` branch policy and removes merged temporary branches.
 - `.eas/workflows/create-production-builds.yml`: runs on pushes to `main`, validates the project, runs Android prebuild, and generates the APK with the `preview` profile.
 
-For the full workflow details, see [`WORKFLOWS.md`](./WORKFLOWS.md).
+For the full workflow details, see [`docs/WORKFLOWS.md`](./docs/WORKFLOWS.md).
 
 ## Branching and Deployment Model
 
