@@ -10,9 +10,7 @@ function getAndroidVersionCode(version) {
 }
 
 module.exports = () => {
-  const projectId =
-    process.env.EXPO_PUBLIC_EAS_PROJECT_ID ??
-    "4eabd014-afb6-4f98-a786-686be27b4bfb";
+  const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID;
   const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
   const iosBundleIdentifier =
     process.env.IOS_BUNDLE_IDENTIFIER ?? "com.sdemetrio.testnotifications";
