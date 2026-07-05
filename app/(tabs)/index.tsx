@@ -1,8 +1,8 @@
-import { Collapsible } from '@/assets/ui/collapsible';
-import { IconSymbol } from '@/assets/ui/icon-symbol';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Collapsible } from '@/components/ui/collapsible';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import Constants from 'expo-constants';
 import { StyleSheet, View } from 'react-native';

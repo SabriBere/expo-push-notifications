@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
+  handleNotification: () => Promise.resolve({
     shouldPlaySound: true,
     shouldSetBadge: true,
     shouldShowBanner: true,
@@ -73,7 +73,6 @@ export function Collapsible(_props: CollapsibleProps) {
     };
   }, []);
 
-  //Permite activar/desactivar notificaciones push
   async function registerDeviceToken() {
     try {
       const token = await registerForPushNotificationsAsync();
@@ -141,21 +140,19 @@ export function Collapsible(_props: CollapsibleProps) {
     );
   }
 
-  //Desuscribirse del websocket
   function sendUnsuscribeAlerts(value: boolean) {
     setRealtimeAlertsEnabled(value);
 
     if (value) {
-      console.log('Suscribir nuevamente al socket / backend');
+      console.log('Subscribe to the socket/backend again');
       return;
     }
 
-    console.log('Desuscribir del socket / avisar a backend que no envíe más alertas');
+    console.log('Unsubscribe from the socket / notify backend to stop sending alerts');
   }
 
   return (
     <ThemedView style={styles.container}>
-      {/* Permite activar/desactivar notificaciones push */}
       <View style={styles.card}>
         <View
           style={[
@@ -190,7 +187,6 @@ export function Collapsible(_props: CollapsibleProps) {
         </View>
       </View>
 
-      {/* Simula la recepción de notificaciones push + revisión de permisos */}
       <View style={styles.card}>
         <View
           style={[

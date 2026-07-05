@@ -122,6 +122,8 @@ npm run build:android:preview
 npm run workflow:android:apk
 ```
 
+The project expects Node.js `>=22.12.0`, matching the GitHub Actions runtime.
+
 The `npm run prebuild:android` command runs:
 
 ```bash
