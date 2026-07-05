@@ -1,28 +1,28 @@
 # Workflows
 
-Este repositorio separa las responsabilidades entre GitHub Actions y Expo/EAS para evitar builds duplicados.
+This repository separates responsibilities between GitHub Actions and Expo/EAS to avoid duplicated build jobs.
 
-## Flujo principal
+## Main Flow
 
-1. Una rama de trabajo se mergea hacia `develop`.
-2. `develop` se valida en GitHub Actions.
-3. `develop` se mergea hacia `main`.
-4. El push resultante en `main` dispara el workflow de EAS.
-5. EAS valida el proyecto, ejecuta el prebuild Android y genera el APK.
+1. A work branch is merged into `develop`.
+2. `develop` is validated in GitHub Actions.
+3. `develop` is merged into `main`.
+4. The resulting push to `main` triggers the EAS workflow.
+5. EAS validates the project, runs the Android prebuild, and generates the APK.
 
 ## GitHub Actions
 
 ### `.github/workflows/deploy.yml`
 
-Aunque el archivo se llama `deploy.yml`, su workflow se llama `Validate` y solo valida el proyecto. No genera APK y no llama a EAS.
+Although the file is named `deploy.yml`, its workflow is named `Validate` and only validates the project. It does not generate an APK and does not call EAS.
 
-Corre en:
+It runs on:
 
-- `pull_request` hacia `main`
-- `pull_request` hacia `develop`
-- `push` hacia `develop`
+- `pull_request` into `main`
+- `pull_request` into `develop`
+- `push` into `develop`
 
-Ejecuta:
+It runs:
 
 ```bash
 npm ci
@@ -30,52 +30,52 @@ npm run lint
 npm run typecheck
 ```
 
-Su funcion es detectar errores de lint o TypeScript antes de integrar cambios.
+Its purpose is to catch lint or TypeScript errors before changes are integrated.
 
 ### `.github/workflows/branch-modeling.yml`
 
-Este workflow modela la politica de ramas.
+This workflow models the branch policy.
 
-Corre en:
+It runs on:
 
-- `pull_request` hacia `main`
-- `pull_request` hacia `develop`
-- eventos de borrado de ramas
-- ejecucion manual con `workflow_dispatch`
+- `pull_request` into `main`
+- `pull_request` into `develop`
+- branch deletion events
+- manual execution through `workflow_dispatch`
 
-Reglas:
+Rules:
 
-- Solo permite PRs desde `develop` hacia `main`.
-- Si otra rama intenta abrir PR directo hacia `main`, el check falla.
-- Si se borra `main` o `develop`, el workflow falla y avisa que esas ramas deben protegerse con branch protection o rulesets.
-- Limpia ramas temporales despues de mergear un PR hacia `main` o `develop`.
+- Only PRs from `develop` into `main` are allowed.
+- If another branch tries to open a direct PR into `main`, the check fails.
+- If `main` or `develop` is deleted, the workflow fails and warns that those branches must be protected with branch protection or rulesets.
+- Temporary branches are deleted after a PR into `main` or `develop` is merged.
 
-Borra la rama origen solo si:
+The source branch is deleted only if:
 
-- El PR fue mergeado.
-- La rama origen pertenece al mismo repositorio.
-- La rama origen no es `main`.
-- La rama origen no es `develop`.
+- The PR was merged.
+- The source branch belongs to the same repository.
+- The source branch is not `main`.
+- The source branch is not `develop`.
 
-Ejemplos:
+Examples:
 
-- `feature/login -> develop`: al mergear, borra `feature/login`.
-- `bugFix/yml -> develop`: al mergear, borra `bugFix/yml`.
-- `develop -> main`: al mergear, no borra `develop`.
+- `feature/login -> develop`: after merge, `feature/login` is deleted.
+- `bugFix/yml -> develop`: after merge, `bugFix/yml` is deleted.
+- `develop -> main`: after merge, `develop` is not deleted.
 
-Importante: GitHub Actions puede marcar esta politica como fallida, pero el bloqueo real de borrado o merge depende de configurar branch protection/rulesets en GitHub.
+Important: GitHub Actions can mark this policy as failed, but real merge or deletion blocking depends on GitHub branch protection or rulesets.
 
-## Expo/EAS workflows
+## Expo/EAS Workflows
 
 ### `.eas/workflows/create-production-builds.yml`
 
-Este es el unico workflow que genera el APK Android.
+This is the only workflow that generates the Android APK.
 
-Corre en:
+It runs on:
 
-- `push` hacia `main`
+- `push` into `main`
 
-Ejecuta primero:
+It first runs:
 
 ```bash
 npm run lint
@@ -83,48 +83,51 @@ npm run typecheck
 npm run prebuild:android
 ```
 
-Luego genera el build Android con:
+Then it generates the Android build with:
 
 - `platform: android`
 - `profile: preview`
 
-El profile `preview` esta configurado en `eas.json` para generar un APK.
+The `preview` profile is configured in `eas.json` to generate an APK.
 
-## Resumen de responsabilidades
+## Responsibility Summary
 
 ### `.github/workflows/deploy.yml`
 
-- Plataforma: GitHub Actions.
-- Corre en: PRs a `main` o `develop`, y push a `develop`.
-- Responsabilidad: validar lint y TypeScript.
+- Platform: GitHub Actions.
+- Runs on: PRs into `main` or `develop`, and pushes into `develop`.
+- Responsibility: validate lint and TypeScript.
 
 ### `.github/workflows/branch-modeling.yml`
 
-- Plataforma: GitHub Actions.
-- Corre en: PRs a `main` o `develop`, eventos `delete` y ejecucion manual.
-- Responsabilidad: controlar la politica `develop -> main` y borrar ramas temporales mergeadas.
+- Platform: GitHub Actions.
+- Runs on: PRs into `main` or `develop`, `delete` events, and manual execution.
+- Responsibility: enforce the `develop -> main` policy and delete merged temporary branches.
 
 ### `.eas/workflows/create-production-builds.yml`
 
-- Plataforma: Expo/EAS.
-- Corre en: push a `main`.
-- Responsabilidad: validar, ejecutar prebuild Android y generar el APK.
+- Platform: Expo/EAS.
+- Runs on: push into `main`.
+- Responsibility: validate, run Android prebuild, and generate the APK.
 
-## Comandos relacionados
+## Related Commands
 
-`package.json` expone estos comandos usados por los workflows:
+`package.json` exposes these commands used by the workflows:
 
 ```bash
 npm run lint
 npm run typecheck
 npm run prebuild:android
 npm run build:android:preview
+npm run workflow:android:apk
 ```
 
-El comando `npm run prebuild:android` ejecuta:
+The `npm run prebuild:android` command runs:
 
 ```bash
 expo prebuild --platform android --clean
 ```
 
-El comando `npm run build:android:preview` ejecuta un build Android con EAS usando el profile `preview`.
+The `npm run build:android:preview` command starts an Android EAS build using the `preview` profile.
+
+The `npm run workflow:android:apk` command runs the EAS workflow defined in `.eas/workflows/create-production-builds.yml`.
