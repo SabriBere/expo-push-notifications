@@ -1,11 +1,11 @@
-import { StyleSheet, View } from 'react-native';
-import Constants from 'expo-constants';
-import { Collapsible } from '@/components/ui/collapsible';
+import { Collapsible } from '@/assets/ui/collapsible';
+import { IconSymbol } from '@/assets/ui/icon-symbol';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import Constants from 'expo-constants';
+import { StyleSheet, View } from 'react-native';
 
 const appVersion = Constants.expoConfig?.version ?? 'dev';
 

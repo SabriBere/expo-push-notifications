@@ -1,7 +1,7 @@
+import { IconSymbol } from '@/assets/ui/icon-symbol';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAllNews } from '@/services/newsServices';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
