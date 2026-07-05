@@ -1,65 +1,127 @@
-import { StyleSheet } from 'react-native';
-import Constants from 'expo-constants';
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Collapsible } from '@/components/ui/collapsible';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import Constants from 'expo-constants';
+import { StyleSheet, View } from 'react-native';
 
 const appVersion = Constants.expoConfig?.version ?? 'dev';
 
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={{ light: '#DDEFEF', dark: '#142426' }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
+        <View style={styles.headerArtwork}>
+          <View style={styles.glowCircle} />
+          <View style={styles.panelShape} />
+          <View style={styles.smallShape} />
+          <IconSymbol
+            size={168}
+            color="#67E8F9"
+            name="bell.badge.fill"
+            style={styles.headerIcon}
+          />
+        </View>
       }>
       <ThemedView style={styles.titleContainer}>
+        <ThemedText type="defaultSemiBold" style={styles.eyebrow}>
+          Control center
+        </ThemedText>
         <ThemedText
           type="title"
+          style={styles.title}>
+          Settings
+        </ThemedText>
+      </ThemedView>
+      <ThemedText style={styles.description}>
+        Manage system permissions and the real-time connection for test alerts.
+      </ThemedText>
+      <ThemedView style={styles.versionPill}>
+        <IconSymbol size={18} color="#67E8F9" name="checkmark.seal.fill" />
+        <ThemedText
+          type="defaultSemiBold"
           style={{
             fontFamily: Fonts.rounded,
           }}>
-          Configuraciones
+          APK version {appVersion}
         </ThemedText>
       </ThemedView>
-      <ThemedText>Esta aplicación incluye un ejemplo de código para demo de notificaciones</ThemedText>
-      <ThemedText type="defaultSemiBold">Versión APK {appVersion}</ThemedText>
-      <Collapsible title="Botones de prueba">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
+      <Collapsible title="Notification controls" />
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+  headerArtwork: {
+    flex: 1,
+  },
+  glowCircle: {
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(103, 232, 249, 0.13)',
+    top: -50,
+    right: -40,
+    position: 'absolute',
+  },
+  panelShape: {
+    width: 280,
+    height: 132,
+    borderRadius: 36,
+    backgroundColor: 'rgba(15, 118, 110, 0.42)',
+    bottom: -24,
+    left: -72,
+    position: 'absolute',
+    transform: [{ rotate: '-10deg' }],
+  },
+  smallShape: {
+    width: 120,
+    height: 120,
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+    bottom: 28,
+    right: 34,
+    position: 'absolute',
+    transform: [{ rotate: '12deg' }],
+  },
+  headerIcon: {
+    bottom: 18,
+    left: 34,
     position: 'absolute',
   },
   titleContainer: {
-    flexDirection: 'row',
     gap: 8,
+  },
+  eyebrow: {
+    color: '#67E8F9',
+    textTransform: 'uppercase',
+    letterSpacing: 0,
+    fontSize: 12,
+  },
+  title: {
+    fontFamily: Fonts.rounded,
+    fontSize: 40,
+    lineHeight: 44,
+  },
+  description: {
+    color: '#CBD5E1',
+    fontSize: 17,
+    lineHeight: 26,
+  },
+  versionPill: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#243236',
+    backgroundColor: '#151B1D',
   },
 });

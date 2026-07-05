@@ -16,6 +16,8 @@ type IconMapping = Partial<Record<SFSymbolName, ComponentProps<typeof MaterialIc
 const MAPPING = {
   'house.fill': 'home',
   'paperplane.fill': 'send',
+  'bell.badge.fill': 'notifications-active',
+  'checkmark.seal.fill': 'verified',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
 } satisfies IconMapping;
