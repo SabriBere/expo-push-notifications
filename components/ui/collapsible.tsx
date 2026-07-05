@@ -129,12 +129,12 @@ export function Collapsible(_props: CollapsibleProps) {
     }
 
     Alert.alert(
-      'Notificaciones',
-      'Para desactivar las notificaciones debes hacerlo desde la configuración del sistema.',
+      'Notifications',
+      'To turn notifications off, change them from system settings.',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Abrir configuración',
+          text: 'Open settings',
           onPress: () => Linking.openSettings(),
         },
       ]
@@ -157,41 +157,77 @@ export function Collapsible(_props: CollapsibleProps) {
     <ThemedView style={styles.container}>
       {/* Permite activar/desactivar notificaciones push */}
       <View style={styles.card}>
+        <View
+          style={[
+            styles.statusRail,
+            systemNotificationsEnabled ? styles.statusRailOn : styles.statusRailOff,
+          ]}
+        />
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Notificaciones del sistema</Text>
+          <Text style={styles.title}>System notifications</Text>
           <Text style={styles.description}>
             {systemNotificationsEnabled
-              ? 'Activadas. El dispositivo puede mostrar banners, sonido y badge.'
-              : 'Desactivadas. Debes habilitarlas desde permisos o configuración.'}
+              ? 'Enabled. The device can show banners, sound, and badges.'
+              : 'Disabled. Enable them from permissions or settings.'}
           </Text>
         </View>
 
-        <Switch
-          value={systemNotificationsEnabled}
-          onValueChange={triggerSettingsPermissions}
-        />
+        <View style={styles.switchContainer}>
+          <Text
+            style={[
+              styles.statusText,
+              systemNotificationsEnabled ? styles.statusTextOn : styles.statusTextOff,
+            ]}>
+            {systemNotificationsEnabled ? 'On' : 'Off'}
+          </Text>
+          <Switch
+            value={systemNotificationsEnabled}
+            onValueChange={triggerSettingsPermissions}
+            trackColor={{ false: '#2A3034', true: '#0F766E' }}
+            thumbColor={systemNotificationsEnabled ? '#CCFBF1' : '#F8FAFC'}
+            ios_backgroundColor="#2A3034"
+          />
+        </View>
       </View>
 
       {/* Simula la recepción de notificaciones push + revisión de permisos */}
       <View style={styles.card}>
+        <View
+          style={[
+            styles.statusRail,
+            realtimeAlertsEnabled ? styles.statusRailOn : styles.statusRailOff,
+          ]}
+        />
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Alertas en tiempo real</Text>
+          <Text style={styles.title}>Real-time alerts</Text>
           <Text style={styles.description}>
             {realtimeAlertsEnabled
-              ? 'Suscripta. La app puede recibir alertas desde socket/backend.'
-              : 'Desuscripta. Deja de recibir alertas en tiempo real.'}
+              ? 'Subscribed. The app can receive alerts from the socket/backend.'
+              : 'Unsubscribed. Real-time alerts are paused.'}
           </Text>
         </View>
 
-        <Switch
-          value={realtimeAlertsEnabled}
-          onValueChange={sendUnsuscribeAlerts}
-        />
+        <View style={styles.switchContainer}>
+          <Text
+            style={[
+              styles.statusText,
+              realtimeAlertsEnabled ? styles.statusTextOn : styles.statusTextOff,
+            ]}>
+            {realtimeAlertsEnabled ? 'Online' : 'Paused'}
+          </Text>
+          <Switch
+            value={realtimeAlertsEnabled}
+            onValueChange={sendUnsuscribeAlerts}
+            trackColor={{ false: '#2A3034', true: '#16A34A' }}
+            thumbColor={realtimeAlertsEnabled ? '#DCFCE7' : '#F8FAFC'}
+            ios_backgroundColor="#2A3034"
+          />
+        </View>
       </View>
 
       {systemNotificationsEnabled && expoPushToken ? (
         <View style={styles.tokenCard}>
-          <Text style={styles.title}>ExpoPushToken generado</Text>
+          <Text style={styles.title}>Generated ExpoPushToken</Text>
           <Text selectable style={styles.tokenText}>
             {expoPushToken}
           </Text>
@@ -203,31 +239,52 @@ export function Collapsible(_props: CollapsibleProps) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    gap: 16,
+    paddingTop: 6,
+    gap: 14,
   },
   card: {
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#151B1D',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#243236',
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 14,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    elevation: 3,
+  },
+  statusRail: {
+    width: 4,
+    alignSelf: 'stretch',
+    borderRadius: 999,
+  },
+  statusRailOn: {
+    backgroundColor: '#22C55E',
+  },
+  statusRailOff: {
+    backgroundColor: '#475569',
   },
   textContainer: {
     flex: 1,
-    gap: 6,
+    gap: 7,
   },
   title: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: '800',
   },
   description: {
-    color: '#ddd',
+    color: '#CBD5E1',
     fontSize: 14,
     fontWeight: '400',
+    lineHeight: 20,
   },
   testButton: {
     backgroundColor: '#1f6feb',
@@ -241,15 +298,41 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   tokenCard: {
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    borderRadius: 12,
+    backgroundColor: '#101415',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#243236',
     padding: 16,
     gap: 10,
   },
   tokenText: {
-    color: '#ddd',
+    color: '#CBD5E1',
     fontSize: 13,
     fontWeight: '400',
     lineHeight: 18,
+  },
+  switchContainer: {
+    width: 90,
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  statusText: {
+    maxWidth: 90,
+    paddingVertical: 4,
+    paddingHorizontal: 9,
+    borderRadius: 999,
+    overflow: 'hidden',
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  statusTextOn: {
+    color: '#A7F3D0',
+    backgroundColor: 'rgba(34, 197, 94, 0.14)',
+  },
+  statusTextOff: {
+    color: '#CBD5E1',
+    backgroundColor: 'rgba(148, 163, 184, 0.12)',
   },
 });
