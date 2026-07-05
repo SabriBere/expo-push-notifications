@@ -19,6 +19,7 @@ Mobile application built with Expo and React Native to test the push notificatio
 - [Notification Flow](#notification-flow)
 - [Formatting Configuration](#formatting-configuration)
 - [Notes and Pending Items](#notes-and-pending-items)
+- [License](#license)
 
 ## Project Goal
 
@@ -78,7 +79,7 @@ For the full dependency list, check `package.json`.
 
 Before running the project locally, make sure you have:
 
-- Node.js installed
+- Node.js `>=22.12.0`
 - npm installed
 - Android Studio if you want to run the Android emulator
 - Xcode if you want to run the iOS simulator
@@ -372,12 +373,11 @@ app/
 └── modal.tsx
 
 components/
+└── ui/
 utils/
 assets/
 constants/
 hooks/
-mocks/
-scripts/
 ```
 
 ### General Description
@@ -389,8 +389,8 @@ scripts/
 - **`app/(tabs)/notifications.tsx`**: notifications list screen.
 - **`app/news/[id].tsx`**: news detail screen through a dynamic route.
 - **`utils/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
-- **`mocks/`**: mock data currently used by the list screen.
 - **`components/`**: reusable UI components.
+- **`components/ui/`**: reusable UI controls and icon helpers.
 - **`constants/`**: theme and visual constants.
 
 ## Notification Flow
@@ -418,9 +418,12 @@ It is recommended to run `npm run lint` before pushing changes.
 
 There are a few important points to keep in mind about the current state of the project:
 
-- The notifications screen still uses mocks instead of the data already cached in React Query.
 - The original Expo README was replaced with this project-specific documentation.
 - There are no testing scripts defined yet in `package.json`.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE).
 
 ## Useful References
 
