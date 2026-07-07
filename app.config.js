@@ -9,16 +9,27 @@ function getAndroidVersionCode(version) {
   return major * 10000 + minor * 100 + patch;
 }
 
+function requireEnv(name) {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Missing ${name}`);
+  }
+
+  return value;
+}
+
 module.exports = () => {
   const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID;
   const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
-  const iosBundleIdentifier =
-    process.env.IOS_BUNDLE_IDENTIFIER ?? "com.sdemetrio.testnotifications";
+  const expoOwner = requireEnv("EXPO_OWNER");
+  const iosBundleIdentifier = requireEnv("IOS_BUNDLE_IDENTIFIER");
+  const androidPackage = requireEnv("ANDROID_PACKAGE");
 
   return {
     name: "TestNotifications",
     slug: "testnotifications",
-    owner: "sabrinademetrios-organization",
+    owner: expoOwner,
     version: appVersion,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
@@ -33,7 +44,7 @@ module.exports = () => {
       },
     },
     android: {
-      package: "com.sdemetrio.testnotifications",
+      package: androidPackage,
       versionCode: getAndroidVersionCode(appVersion),
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
