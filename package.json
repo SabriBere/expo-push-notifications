@@ -62,5 +62,10 @@
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "xcode": {
+      "uuid": "11.1.1"
+    }
+  }
 }
