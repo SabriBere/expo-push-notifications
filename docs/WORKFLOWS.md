@@ -67,7 +67,7 @@ Important: GitHub Actions can mark this policy as failed, but real merge or dele
 
 ## Expo/EAS Workflows
 
-### `.eas/workflows/create-production-builds.yml`
+### `.eas/workflows/create-preview-builds.yml`
 
 This is the only workflow that generates the Android APK.
 
@@ -104,7 +104,7 @@ The `preview` profile is configured in `eas.json` to generate an APK.
 - Runs on: PRs into `main` or `develop`, `delete` events, and manual execution.
 - Responsibility: enforce the `develop -> main` policy and delete merged temporary branches.
 
-### `.eas/workflows/create-production-builds.yml`
+### `.eas/workflows/create-preview-builds.yml`
 
 - Platform: Expo/EAS.
 - Runs on: push into `main`.
@@ -132,4 +132,4 @@ expo prebuild --platform android --clean
 
 The `npm run build:android:preview` command starts an Android EAS build using the `preview` profile.
 
-The `npm run workflow:android:apk` command runs the EAS workflow defined in `.eas/workflows/create-production-builds.yml`.
+The `npm run workflow:android:apk` command runs the EAS workflow defined in `.eas/workflows/create-preview-builds.yml`.

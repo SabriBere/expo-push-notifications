@@ -92,7 +92,7 @@ Before running the project locally, make sure you have:
 
 The project uses environment variables defined in `.env`. A base example is available in `.env.example`.
 
-Currently expected variables:
+Variables used by the project:
 
 - `EXPO_PUBLIC_API_URL`: base HTTP backend URL.
 - `EXPO_PUBLIC_EAS_PROJECT_ID`: EAS project identifier.
@@ -100,6 +100,11 @@ Currently expected variables:
 - `IOS_BUNDLE_IDENTIFIER`: unique iOS application identifier used by Apple, EAS credentials, and APNs.
 - `ANDROID_PACKAGE`: unique Android application identifier.
 - `GOOGLE_SERVICES_JSON`: path to the `google-services.json` file.
+
+For a basic local start, no environment variables are required. Expo falls back to
+`com.example.testnotifications` for the native application identifiers and omits
+the Expo owner. Configure the real values before using EAS builds, native push
+credentials, or the backend-dependent screens.
 
 Example:
 
@@ -202,7 +207,7 @@ Creates an iOS production build in EAS using the `production` profile.
 
 ### `npm run workflow:android:apk`
 
-Runs the EAS workflow defined in `.eas/workflows/create-production-builds.yml`.
+Runs the EAS workflow defined in `.eas/workflows/create-preview-builds.yml`.
 
 ## Prebuild and EAS Builds
 
@@ -304,7 +309,7 @@ Responsibilities:
 
 - `.github/workflows/deploy.yml`: runs lint and TypeScript checks for PRs into `main` or `develop`, and pushes to `develop`.
 - `.github/workflows/branch-modeling.yml`: enforces the `develop -> main` branch policy and removes merged temporary branches.
-- `.eas/workflows/create-production-builds.yml`: runs on pushes to `main`, validates the project, runs Android prebuild, and generates the APK with the `preview` profile.
+- `.eas/workflows/create-preview-builds.yml`: runs on pushes to `main`, validates the project, runs Android prebuild, and generates the APK with the `preview` profile.
 
 For the full workflow details, see [`docs/WORKFLOWS.md`](./docs/WORKFLOWS.md).
 
