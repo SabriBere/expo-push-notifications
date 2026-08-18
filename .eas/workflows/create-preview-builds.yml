@@ -13,6 +13,7 @@ jobs:
   validate:
     name: Validate project
     runs_on: linux-medium
+    environment: preview
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
