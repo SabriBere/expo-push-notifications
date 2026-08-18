@@ -92,7 +92,7 @@ Before running the project locally, make sure you have:
 
 The project uses environment variables defined in `.env`. A base example is available in `.env.example`.
 
-Currently expected variables:
+Variables used by the project:
 
 - `EXPO_PUBLIC_API_URL`: base HTTP backend URL.
 - `EXPO_PUBLIC_EAS_PROJECT_ID`: EAS project identifier.
@@ -100,6 +100,11 @@ Currently expected variables:
 - `IOS_BUNDLE_IDENTIFIER`: unique iOS application identifier used by Apple, EAS credentials, and APNs.
 - `ANDROID_PACKAGE`: unique Android application identifier.
 - `GOOGLE_SERVICES_JSON`: path to the `google-services.json` file.
+
+For a basic local start, no environment variables are required. Expo falls back to
+`com.example.testnotifications` for the native application identifiers and omits
+the Expo owner. Configure the real values before using EAS builds, native push
+credentials, or the backend-dependent screens.
 
 Example:
 

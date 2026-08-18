@@ -9,27 +9,19 @@ function getAndroidVersionCode(version) {
   return major * 10000 + minor * 100 + patch;
 }
 
-function requireEnv(name) {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`Missing ${name}`);
-  }
-
-  return value;
-}
-
 module.exports = () => {
   const projectId = process.env.EXPO_PUBLIC_EAS_PROJECT_ID;
   const googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
-  const expoOwner = requireEnv("EXPO_OWNER");
-  const iosBundleIdentifier = requireEnv("IOS_BUNDLE_IDENTIFIER");
-  const androidPackage = requireEnv("ANDROID_PACKAGE");
+  const expoOwner = process.env.EXPO_OWNER;
+  const iosBundleIdentifier =
+    process.env.IOS_BUNDLE_IDENTIFIER ?? "com.example.testnotifications";
+  const androidPackage =
+    process.env.ANDROID_PACKAGE ?? "com.example.testnotifications";
 
   return {
     name: "TestNotifications",
     slug: "testnotifications",
-    owner: expoOwner,
+    ...(expoOwner ? { owner: expoOwner } : {}),
     version: appVersion,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
