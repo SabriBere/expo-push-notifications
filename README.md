@@ -6,13 +6,13 @@ Mobile application built with Expo and React Native to demonstrate a generic pus
 
 This mobile application can be used with
 [socket-back](https://github.com/SabriBere/socket-back), a Node.js backend that
-provides HTTP endpoints, WebSocket communication and Expo push-notification
+provides HTTP endpoints and Expo push-notification
 delivery.
 
 ```text
 expo-push-notifications (Expo / React Native)
               ↕
-      HTTP + WebSocket
+             HTTP
               ↕
 socket-back (Node.js / Express / Prisma)
               ↓
@@ -114,7 +114,6 @@ The project uses environment variables defined in `.env`. A base example is avai
 Variables used by the project:
 
 - `EXPO_PUBLIC_API_URL`: base HTTP backend URL.
-- `EXPO_PUBLIC_WS_URL`: WebSocket URL exposed by the backend.
 - `EXPO_PUBLIC_EAS_PROJECT_ID`: EAS project identifier.
 - `EXPO_OWNER`: Expo account or organization that owns the project.
 - `IOS_BUNDLE_IDENTIFIER`: unique iOS application identifier used by Apple, EAS credentials, and APNs.
@@ -139,7 +138,6 @@ IOS_BUNDLE_IDENTIFIER=<ios-bundle-identifier>
 ANDROID_PACKAGE=<android-application-id>
 GOOGLE_SERVICES_JSON=<path-to-google-services-json>
 EXPO_PUBLIC_API_URL=<backend-base-url>
-EXPO_PUBLIC_WS_URL=<backend-websocket-url>
 ```
 
 ## Installation
@@ -176,16 +174,14 @@ Expo will open the interactive development panel, from which you can run the app
 
 ## Accessing the Local Backend from Android
 
-The local backend exposes the HTTP API on port `8000` and the WebSocket server
-on port `8001`.
+The local backend exposes the HTTP API on port `8000`.
 
 ### Physical device connected through USB
 
-Forward both ports from the Android device to the development machine:
+Forward the HTTP port from the Android device to the development machine:
 
 ```bash
 adb reverse tcp:8000 tcp:8000
-adb reverse tcp:8001 tcp:8001
 adb reverse --list
 ```
 
@@ -193,7 +189,6 @@ Then configure the local API URL:
 
 ```env
 EXPO_PUBLIC_API_URL=http://localhost:8000
-EXPO_PUBLIC_WS_URL=ws://localhost:8001
 ```
 
 Port forwarding may need to be configured again after disconnecting or
@@ -206,7 +201,6 @@ devices are connected to the same network. For example:
 
 ```env
 EXPO_PUBLIC_API_URL=http://192.168.1.5:8000
-EXPO_PUBLIC_WS_URL=ws://192.168.1.5:8001
 ```
 
 The backend must listen on `0.0.0.0`, and the local firewall must allow the
@@ -218,7 +212,6 @@ The standard Android emulator reaches the host machine through `10.0.2.2`:
 
 ```env
 EXPO_PUBLIC_API_URL=http://10.0.2.2:8000
-EXPO_PUBLIC_WS_URL=ws://10.0.2.2:8001
 ```
 
 After changing an `EXPO_PUBLIC_` variable, restart the development server so
@@ -432,13 +425,11 @@ git push -u origin develop
 The application is currently prepared to integrate with two main external services:
 
 - an HTTP backend to register the push token,
-- a WebSocket backend for real-time notification updates,
 - Expo Push Notifications through the device and Expo services.
 
 Current behavior:
 
 - push token registration is sent to `EXPO_PUBLIC_API_URL` using the `/push-tokens/register` endpoint,
-- real-time notification batches are received from `EXPO_PUBLIC_WS_URL`,
 - the project includes EAS configuration in `eas.json`,
 - Android can load `google-services.json` from the `GOOGLE_SERVICES_JSON` variable.
 
@@ -491,9 +482,8 @@ The notification flow currently implemented is:
 1. The app requests notification permissions on startup.
 2. If the device is physical and permissions are granted, it gets the Expo Push Token.
 3. The token is registered in the backend with `POST /push-tokens/register`.
-4. The app connects to `EXPO_PUBLIC_WS_URL`, requests the current notifications, and updates the TanStack Query cache from `notificationBatch` messages.
-5. When a push notification reaches the device, Expo delivers the payload to the app.
-6. If the user taps a notification, the app navigates to the demo detail route `/demo-items/[id]`.
+4. When a push notification reaches the device, Expo delivers the payload to the app.
+5. If the user taps a notification, the app navigates to the demo detail route `/demo-items/[id]`.
 
 The repository uses an intentionally generic demo payload with no
 domain-specific or user-identifying fields:

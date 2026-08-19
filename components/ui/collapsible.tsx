@@ -1,6 +1,5 @@
 import { ThemedView } from '@/components/themed-view';
 import { useExpoPushToken } from '@/contexts/PushTokenContext';
-import { useNotificationSocket } from '@/hooks/use-notification-socket';
 import { registerForPushNotificationsAsync } from '@/utils/NotificationsUtils';
 import * as Notifications from 'expo-notifications';
 import React, { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -31,7 +30,6 @@ type CollapsibleProps = {
 
 export function Collapsible(_props: CollapsibleProps) {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
-  useNotificationSocket(true);
   const { setExpoPushToken } = useExpoPushToken();
   const appState = useRef(AppState.currentState);
 
