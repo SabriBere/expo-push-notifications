@@ -491,7 +491,7 @@ The notification flow currently implemented is:
 1. The app requests notification permissions on startup.
 2. If the device is physical and permissions are granted, it gets the Expo Push Token.
 3. The token is registered in the backend with `POST /push-tokens/register`.
-4. When real-time alerts are enabled, the app connects to `EXPO_PUBLIC_WS_URL`, requests the current notifications, and updates the TanStack Query cache from `notificationBatch` messages.
+4. The app connects to `EXPO_PUBLIC_WS_URL`, requests the current notifications, and updates the TanStack Query cache from `notificationBatch` messages.
 5. When a push notification reaches the device, Expo delivers the payload to the app.
 6. If the user taps a notification, the app navigates to the demo detail route `/demo-items/[id]`.
 

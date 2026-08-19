@@ -31,8 +31,7 @@ type CollapsibleProps = {
 
 export function Collapsible(_props: CollapsibleProps) {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
-  const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
-  useNotificationSocket(realtimeAlertsEnabled);
+  useNotificationSocket(true);
   const { setExpoPushToken } = useExpoPushToken();
   const appState = useRef(AppState.currentState);
 
@@ -146,10 +145,6 @@ export function Collapsible(_props: CollapsibleProps) {
     );
   }
 
-  function sendUnsuscribeAlerts(value: boolean) {
-    setRealtimeAlertsEnabled(value);
-  }
-
   return (
     <ThemedView style={styles.container}>
       <View style={styles.card}>
@@ -181,40 +176,6 @@ export function Collapsible(_props: CollapsibleProps) {
             onValueChange={triggerSettingsPermissions}
             trackColor={{ false: '#2A3034', true: '#0F766E' }}
             thumbColor={systemNotificationsEnabled ? '#CCFBF1' : '#F8FAFC'}
-            ios_backgroundColor="#2A3034"
-          />
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <View
-          style={[
-            styles.statusRail,
-            realtimeAlertsEnabled ? styles.statusRailOn : styles.statusRailOff,
-          ]}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Real-time alerts</Text>
-          <Text style={styles.description}>
-            {realtimeAlertsEnabled
-              ? 'Subscribed. The app can receive alerts from the socket/backend.'
-              : 'Unsubscribed. Real-time alerts are paused.'}
-          </Text>
-        </View>
-
-        <View style={styles.switchContainer}>
-          <Text
-            style={[
-              styles.statusText,
-              realtimeAlertsEnabled ? styles.statusTextOn : styles.statusTextOff,
-            ]}>
-            {realtimeAlertsEnabled ? 'Online' : 'Paused'}
-          </Text>
-          <Switch
-            value={realtimeAlertsEnabled}
-            onValueChange={sendUnsuscribeAlerts}
-            trackColor={{ false: '#2A3034', true: '#16A34A' }}
-            thumbColor={realtimeAlertsEnabled ? '#DCFCE7' : '#F8FAFC'}
             ios_backgroundColor="#2A3034"
           />
         </View>
