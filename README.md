@@ -11,6 +11,7 @@ Mobile application built with Expo and React Native to test the push notificatio
 - [Prerequisites](#prerequisites)
 - [Environment Variables](#environment-variables)
 - [Installation](#installation)
+- [Accessing the Local Backend from Android](#accessing-the-local-backend-from-android)
 - [Available Scripts](#available-scripts)
 - [Prebuild and EAS Builds](#prebuild-and-eas-builds)
 - [Workflows](#workflows)
@@ -148,6 +149,57 @@ Expo will open the interactive development panel, from which you can run the app
 - iOS simulator
 - development build
 - Web
+
+## Accessing the Local Backend from Android
+
+The local backend exposes the HTTP API on port `8000` and the WebSocket server
+on port `8001`.
+
+### Physical device connected through USB
+
+Forward both ports from the Android device to the development machine:
+
+```bash
+adb reverse tcp:8000 tcp:8000
+adb reverse tcp:8001 tcp:8001
+adb reverse --list
+```
+
+Then configure the local API URL:
+
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8000
+```
+
+Port forwarding may need to be configured again after disconnecting or
+restarting the device, or after restarting the ADB server.
+
+### Physical device connected through Wi-Fi
+
+Use the development machine's local network IP address and make sure both
+devices are connected to the same network. For example:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.1.5:8000
+```
+
+The backend must listen on `0.0.0.0`, and the local firewall must allow the
+connection.
+
+### Android emulator
+
+The standard Android emulator reaches the host machine through `10.0.2.2`:
+
+```env
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8000
+```
+
+After changing an `EXPO_PUBLIC_` variable, restart the development server so
+Expo rebuilds the JavaScript bundle with the new value:
+
+```bash
+npm run start:dev-client -- --clear
+```
 
 ## Available Scripts
 

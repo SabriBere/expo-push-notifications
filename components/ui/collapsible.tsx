@@ -45,13 +45,45 @@ export function Collapsible(_props: CollapsibleProps) {
     return settings;
   }
 
+  async function syncExpoPushTokenWithBackend(token: string) {
+    const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
+    console.log("Expo push registration URL:", apiBaseUrl);
+
+    if (!apiBaseUrl) {
+      console.warn(
+        "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
+      );
+      return;
+    }
+
+    const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Backend push token registration failed with status ${response.status}: ${await response.text()}`
+      );
+    }
+
+    console.log("Expo push token registered in backend");
+  }
+
   async function restoreExpoPushTokenIfEnabled() {
     const settings = await checkSystemPermissions();
     if (!settings.granted) return;
 
     try {
       const token = await registerForPushNotificationsAsync();
-      if (token) setExpoPushToken(token);
+      if (token) {
+        setExpoPushToken(token);
+        console.log("Expo push token restored:", token);
+        await syncExpoPushTokenWithBackend(token);
+      }
     } catch (error) {
       console.error("Error restoring Expo push token", error);
     }
@@ -87,35 +119,7 @@ export function Collapsible(_props: CollapsibleProps) {
       setExpoPushToken(token);
       setSystemNotificationsEnabled(true);
       console.log("Expo push token:", token);
-
-      const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
-      console.log("Expo push registration URL:", apiBaseUrl);
-
-      if (!apiBaseUrl) {
-        console.warn(
-          "Missing EXPO_PUBLIC_API_URL. Skipping backend push token registration."
-        );
-        return;
-      }
-
-      const response = await fetch(`${apiBaseUrl}/push-tokens/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      if (!response.ok) {
-        console.error(
-          "Error registering Expo push token in backend",
-          response.status,
-          await response.text()
-        );
-        return;
-      }
-
-      console.log("Expo push token registered in backend");
+      await syncExpoPushTokenWithBackend(token);
     } catch (error) {
       console.error("Error registering Expo push token", error);
     }
