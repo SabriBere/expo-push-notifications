@@ -53,16 +53,16 @@ function useNotificationObserver() {
       handledNotificationId.current = notificationId;
 
       const data = response.notification.request.content.data as DemoNotificationData;
-      console.log("JSON recibido al tocar la notificación:", JSON.stringify(data, null, 2));
-      console.log("Respuesta completa de la notificación:", JSON.stringify(response, null, 2));
+      // console.log("JSON recibido al tocar la notificación:", JSON.stringify(data, null, 2));
+      // console.log("Respuesta completa de la notificación:", JSON.stringify(response, null, 2));
       openNotificationDetail(data);
       void Notifications.clearLastNotificationResponseAsync();
     }
 
     const notificationSubscription = Notifications.addNotificationReceivedListener((notification) => {
       const data = notification.request.content.data;
-      console.log("JSON recibido con la app abierta:", JSON.stringify(data, null, 2));
-      console.log("Notificación completa recibida:", JSON.stringify(notification, null, 2));
+      // console.log("JSON recibido con la app abierta:", JSON.stringify(data, null, 2));
+      // console.log("Notificación completa recibida:", JSON.stringify(notification, null, 2));
     });
 
     const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
