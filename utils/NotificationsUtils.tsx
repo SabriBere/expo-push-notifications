@@ -2,30 +2,10 @@ import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import { Alert, Linking, Platform } from "react-native";
-
-interface NotificationItem {
-  Title: string;
-  MediaType: number;
-  Media: string;
-  Section: string;
-  NoticiaId: number;
-  ConsultasId: number;
-}
-
-type NotificationData = {
-  url?: string;
-  params?: {
-    id?: number;
-    consultasId?: number;
-  };
-  NoticiaId?: number;
-  ConsultasId?: number;
-  TipoConsultaId?: number;
-  TipoNotificacion?: number | string;
-  EPais?: number;
-  PautaId?: number;
-  UserName?: string;
-};
+import type {
+  DemoNotification,
+  DemoNotificationData,
+} from "@/types/demoNotification";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -125,15 +105,16 @@ export async function registerForPushNotificationsAsync() {
 export function listenNotificationActions() {
   return Notifications.addNotificationResponseReceivedListener(async (response) => {
     const actionId = response.actionIdentifier;
-    const data = response.notification.request.content.data as NotificationData;
+    const data = response.notification.request.content.data as DemoNotificationData;
     console.log("JSON recibido en la notificación:", JSON.stringify(data, null, 2));
-    const noticiaId = data.params?.id ?? data.NoticiaId;
-    const consultasId = data.params?.consultasId ?? data.ConsultasId;
-    const url = data.url ?? (noticiaId ? `/news/${noticiaId}` : undefined);
+    const url = data.url ?? `/demo-items/${data.itemId}`;
 
     // Acción custom: marcar como leído
     if (actionId === ACTION_MARK_AS_READ) {
-      console.log("Marcar como leído:", { noticiaId, consultasId });
+      console.log("Marcar como leído:", {
+        itemId: data.itemId,
+        contextId: data.contextId,
+      });
 
       // Acá podés:
       // 1) llamar a tu backend
@@ -156,7 +137,7 @@ export function listenNotificationActions() {
 }
 
 export async function triggerPushNotifications(
-  notifications: NotificationItem[]
+  notifications: DemoNotification[]
 ) {
   const hasPermission = await ensureNotificationPermissions();
   if (!hasPermission) return;
@@ -166,41 +147,39 @@ export async function triggerPushNotifications(
   for (const notif of notifications) {
     let icon = "⚪";
 
-    switch (notif.MediaType) {
-      case 1:
-        icon = "📰";
+    switch (notif.sourceType) {
+      case "web":
+        icon = "🌐";
         break;
-      case 2:
-        icon = "📱";
+      case "system":
+        icon = "⚙️";
         break;
-      case 3:
-        icon = "🖥️";
+      case "email":
+        icon = "✉️";
         break;
-      case 4:
-        icon = "🎙️";
+      case "collaboration":
+        icon = "👥";
         break;
     }
 
-    const url = `/news/${notif.NoticiaId}`;
+    const url = `/demo-items/${notif.itemId}`;
     const notificationDetails = [
-      notif.Title,
-      `Noticia: ${notif.NoticiaId}`,
-      `Consulta: ${notif.ConsultasId}`,
+      notif.title,
+      `Item: ${notif.itemId}`,
+      `Context: ${notif.contextId}`,
       `URL: ${url}`,
     ].join("\n");
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `${icon} ${notif.Media}`,
-        subtitle: `${icon} ${notif.Media} ${notif.Section}`,
+        title: `${icon} ${notif.source}`,
+        subtitle: `${icon} ${notif.source} ${notif.category}`,
         body: notificationDetails,
         categoryIdentifier: NEWS_CATEGORY_ID,
         data: {
           url,
-          params: {
-            id: notif.NoticiaId,
-            consultasId: notif.ConsultasId
-          },
+          itemId: notif.itemId,
+          contextId: notif.contextId,
         },
         sound: true,
       },
