@@ -1,6 +1,6 @@
 # TestNotifications
 
-Mobile application built with Expo and React Native to test the push notification flow and internal deep linking to a news detail screen.
+Mobile application built with Expo and React Native to demonstrate a generic push notification flow and internal deep linking to a demo detail screen.
 
 ## Table of Contents
 
@@ -39,7 +39,7 @@ The application currently includes:
 - a tab-based navigation structure using `expo-router`,
 - a settings or demo screen,
 - a notifications list screen,
-- a news detail screen accessible through a dynamic route,
+- a generic notification detail screen accessible through a dynamic route,
 - push permission and token registration,
 - initial backend integration to register the push token.
 
@@ -429,7 +429,7 @@ app/
 │   ├── _layout.tsx
 │   ├── index.tsx
 │   └── notifications.tsx
-├── news/
+├── demo-items/
 │   └── [id].tsx
 ├── _layout.tsx
 └── modal.tsx
@@ -449,7 +449,7 @@ hooks/
 - **`app/(tabs)/_layout.tsx`**: defines tab navigation.
 - **`app/(tabs)/index.tsx`**: settings/demo screen.
 - **`app/(tabs)/notifications.tsx`**: notifications list screen.
-- **`app/news/[id].tsx`**: news detail screen through a dynamic route.
+- **`app/demo-items/[id].tsx`**: generic notification detail screen through a dynamic route.
 - **`utils/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
 - **`components/`**: reusable UI components.
 - **`components/ui/`**: reusable UI controls and icon helpers.
@@ -463,7 +463,32 @@ The notification flow currently implemented is:
 2. If the device is physical and permissions are granted, it gets the Expo Push Token.
 3. The token is registered in the backend with `POST /push-tokens/register`.
 4. When a push notification reaches the device, Expo delivers the payload to the app.
-5. If the user taps a notification, the app navigates to the news detail route `/news/[id]`.
+5. If the user taps a notification, the app navigates to the demo detail route `/demo-items/[id]`.
+
+The repository uses an intentionally generic demo payload with no
+domain-specific or user-identifying fields:
+
+```json
+{
+  "itemId": 101,
+  "contextId": 1001,
+  "url": "/demo-items/101"
+}
+```
+
+Demo items returned by `GET /notifications` use the following model:
+
+```ts
+type DemoNotification = {
+  itemId: number;
+  contextId: number;
+  title: string;
+  sourceType: string;
+  source: string;
+  category: string;
+  link: string;
+};
+```
 
 There is also a notification action called `Mark as read`, already prepared to be extended with backend or local persistence logic.
 
