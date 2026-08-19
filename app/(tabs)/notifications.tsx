@@ -2,26 +2,19 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { getAllNews } from '@/services/newsServices';
+import { getNotifications } from '@/services/notificationServices';
+import type { DemoNotification } from '@/types/demoNotification';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-type NewsItem = {
-  Title: string;
-  Media: string;
-  Section: string;
-  NoticiaId: number;
-  ConsultasId: number;
-};
-
 export default function HomeScreen() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notifications'],
-    queryFn: getAllNews,
+    queryFn: getNotifications,
   });
 
-  const notifications = (data?.data ?? []) as NewsItem[];
+  const notifications = (data?.data ?? []) as DemoNotification[];
 
   return (
     <ParallaxScrollView
@@ -80,23 +73,23 @@ export default function HomeScreen() {
 
         {notifications?.map((notif) => (
           <Pressable
-            key={notif.NoticiaId}
+            key={notif.itemId}
             onPress={() =>
               router.push({
-                pathname: '/news/[id]',
+                pathname: '/demo-items/[id]',
                 params: {
-                  id: notif.NoticiaId,
-                  consultasId: notif.ConsultasId,
+                  id: notif.itemId,
+                  contextId: notif.contextId,
                 },
               })
             }
           >
             <ThemedView style={styles.cardContainer}>
               <ThemedText type="defaultSemiBold" style={styles.cardMeta}>
-                {`${notif.Media} | ${notif.Section}`}
+                {`${notif.source} | ${notif.category}`}
               </ThemedText>
               <ThemedText type="subtitle" style={styles.cardTitle}>
-                {notif.Title}
+                {notif.title}
               </ThemedText>
             </ThemedView>
           </Pressable>

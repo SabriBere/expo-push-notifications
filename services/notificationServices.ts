@@ -1,4 +1,4 @@
-export const getAllNews = async () => {
+export const getNotifications = async () => {
   const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
 
   if (!apiBaseUrl) {
@@ -6,7 +6,7 @@ export const getAllNews = async () => {
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/news/getAll`, {
+    const response = await fetch(`${apiBaseUrl}/notifications`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export const getAllNews = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error in getAllNews:", error);
+    console.error("Error loading demo notifications:", error);
     throw error;
   }
 };

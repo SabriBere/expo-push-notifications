@@ -1,9 +1,27 @@
-# TestNotifications
+# Expo push notifications
 
-Mobile application built with Expo and React Native to test the push notification flow and internal deep linking to a news detail screen.
+Mobile application built with Expo and React Native to demonstrate a generic push notification flow and internal deep linking to a demo detail screen.
+
+## Companion project
+
+This mobile application can be used with
+[socket-back](https://github.com/SabriBere/socket-back), a Node.js backend that
+provides HTTP endpoints, WebSocket communication and Expo push-notification
+delivery.
+
+```text
+expo-push-notifications (Expo / React Native)
+              ↕
+      HTTP + WebSocket
+              ↕
+socket-back (Node.js / Express / Prisma)
+              ↓
+       Expo Push Service
+```
 
 ## Table of Contents
 
+- [Companion project](#companion-project)
 - [Project Goal](#project-goal)
 - [Current Scope](#current-scope)
 - [Project Stack](#project-stack)
@@ -39,7 +57,7 @@ The application currently includes:
 - a tab-based navigation structure using `expo-router`,
 - a settings or demo screen,
 - a notifications list screen,
-- a news detail screen accessible through a dynamic route,
+- a generic notification detail screen accessible through a dynamic route,
 - push permission and token registration,
 - initial backend integration to register the push token.
 
@@ -107,6 +125,10 @@ For a basic local start, no environment variables are required. Expo falls back 
 the Expo owner. Configure the real values before using EAS builds, native push
 credentials, or the backend-dependent screens.
 
+Project-specific EAS metadata is intentionally not hardcoded in the repository.
+Set `EXPO_PUBLIC_EAS_PROJECT_ID` in the local `.env` file and in each EAS
+environment used for remote builds or workflows.
+
 Example:
 
 ```env
@@ -124,7 +146,7 @@ EXPO_PUBLIC_API_URL=<backend-base-url>
 
 ```bash
 git clone <repository-url>
-cd TestNotifications
+cd expo-push-notifications
 ```
 
 ### 2. Install dependencies
@@ -429,7 +451,7 @@ app/
 │   ├── _layout.tsx
 │   ├── index.tsx
 │   └── notifications.tsx
-├── news/
+├── demo-items/
 │   └── [id].tsx
 ├── _layout.tsx
 └── modal.tsx
@@ -449,7 +471,7 @@ hooks/
 - **`app/(tabs)/_layout.tsx`**: defines tab navigation.
 - **`app/(tabs)/index.tsx`**: settings/demo screen.
 - **`app/(tabs)/notifications.tsx`**: notifications list screen.
-- **`app/news/[id].tsx`**: news detail screen through a dynamic route.
+- **`app/demo-items/[id].tsx`**: generic notification detail screen through a dynamic route.
 - **`utils/NotificationsUtils.tsx`**: centralizes permissions, categories, actions, and notification generation.
 - **`components/`**: reusable UI components.
 - **`components/ui/`**: reusable UI controls and icon helpers.
@@ -463,7 +485,32 @@ The notification flow currently implemented is:
 2. If the device is physical and permissions are granted, it gets the Expo Push Token.
 3. The token is registered in the backend with `POST /push-tokens/register`.
 4. When a push notification reaches the device, Expo delivers the payload to the app.
-5. If the user taps a notification, the app navigates to the news detail route `/news/[id]`.
+5. If the user taps a notification, the app navigates to the demo detail route `/demo-items/[id]`.
+
+The repository uses an intentionally generic demo payload with no
+domain-specific or user-identifying fields:
+
+```json
+{
+  "itemId": 101,
+  "contextId": 1001,
+  "url": "/demo-items/101"
+}
+```
+
+Demo items returned by `GET /notifications` use the following model:
+
+```ts
+type DemoNotification = {
+  itemId: number;
+  contextId: number;
+  title: string;
+  sourceType: string;
+  source: string;
+  category: string;
+  link: string;
+};
+```
 
 There is also a notification action called `Mark as read`, already prepared to be extended with backend or local persistence logic.
 
@@ -481,7 +528,6 @@ It is recommended to run `npm run lint` before pushing changes.
 There are a few important points to keep in mind about the current state of the project:
 
 - The original Expo README was replaced with this project-specific documentation.
-- There are no testing scripts defined yet in `package.json`.
 
 ## License
 

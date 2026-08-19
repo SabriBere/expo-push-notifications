@@ -1,48 +1,37 @@
 import { registerNotificationActions } from "@/utils/NotificationsUtils";
 import { PushTokenProvider } from "@/contexts/PushTokenContext";
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from 'expo-router/react-navigation';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from 'expo-notifications';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
+import type { DemoNotificationData } from '@/types/demoNotification';
 import 'react-native-reanimated';
 
-type NotificationData = {
-  url?: string;
-  params?: {
-    id?: number | string;
-    consultasId?: number | string;
-  };
-  NoticiaId?: number | string;
-  ConsultasId?: number | string;
-  TipoConsultaId?: number;
-  TipoNotificacion?: number | string;
-  EPais?: number;
-  PautaId?: number;
-  UserName?: string;
-};
-
-function getNewsIdFromUrl(url?: string) {
-  const match = url?.match(/\/news\/([^/?]+)/);
+function getItemIdFromUrl(url?: string) {
+  const match = url?.match(/\/demo-items\/([^/?]+)/);
   return match?.[1];
 }
 
-function openNotificationDetail(data: NotificationData) {
-  const noticiaId = data.params?.id ?? data.NoticiaId ?? getNewsIdFromUrl(data.url);
-  const consultasId = data.params?.consultasId ?? data.ConsultasId;
+function openNotificationDetail(data: DemoNotificationData) {
+  const itemId = data.itemId ?? getItemIdFromUrl(data.url);
 
-  if (!noticiaId) {
-    console.warn("La notificación no tiene NoticiaId para navegar al detalle", data);
+  if (!itemId) {
+    console.warn("Notification payload has no itemId for detail navigation", data);
     return;
   }
 
   router.push({
-    pathname: '/news/[id]',
+    pathname: '/demo-items/[id]',
     params: {
-      id: String(noticiaId),
-      ...(consultasId ? { consultasId: String(consultasId) } : {}),
+      id: String(itemId),
+      ...(data.contextId ? { contextId: String(data.contextId) } : {}),
     },
   });
 }
@@ -67,18 +56,12 @@ function useNotificationObserver() {
 
       handledNotificationId.current = notificationId;
 
-      const data = response.notification.request.content.data as NotificationData;
-      console.log("JSON recibido al tocar la notificación:", JSON.stringify(data, null, 2));
-      console.log("Respuesta completa de la notificación:", JSON.stringify(response, null, 2));
+      const data = response.notification.request.content.data as DemoNotificationData;
+      // console.log("JSON recibido al tocar la notificación:", JSON.stringify(data, null, 2));
+      // console.log("Respuesta completa de la notificación:", JSON.stringify(response, null, 2));
       openNotificationDetail(data);
       void Notifications.clearLastNotificationResponseAsync();
     }
-
-    const notificationSubscription = Notifications.addNotificationReceivedListener((notification) => {
-      const data = notification.request.content.data;
-      console.log("JSON recibido con la app abierta:", JSON.stringify(data, null, 2));
-      console.log("Notificación completa recibida:", JSON.stringify(notification, null, 2));
-    });
 
     const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
       handleNotificationResponse(response);
@@ -92,7 +75,6 @@ function useNotificationObserver() {
     });
 
     return () => {
-      notificationSubscription.remove();
       responseSubscription.remove();
     };
   }, []);
