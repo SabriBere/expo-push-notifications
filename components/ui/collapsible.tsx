@@ -30,8 +30,7 @@ type CollapsibleProps = {
 
 export function Collapsible(_props: CollapsibleProps) {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
-  const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
-  const { expoPushToken, setExpoPushToken } = useExpoPushToken();
+  const { setExpoPushToken } = useExpoPushToken();
   const appState = useRef(AppState.currentState);
 
   async function checkSystemPermissions() {
@@ -81,7 +80,7 @@ export function Collapsible(_props: CollapsibleProps) {
       const token = await registerForPushNotificationsAsync();
       if (token) {
         setExpoPushToken(token);
-        console.log("Expo push token restored:", token);
+        console.info('Expo push token restored');
         await syncExpoPushTokenWithBackend(token);
       }
     } catch (error) {
@@ -118,7 +117,7 @@ export function Collapsible(_props: CollapsibleProps) {
 
       setExpoPushToken(token);
       setSystemNotificationsEnabled(true);
-      console.log("Expo push token:", token);
+      console.info('Expo push token generated');
       await syncExpoPushTokenWithBackend(token);
     } catch (error) {
       console.error("Error registering Expo push token", error);
@@ -142,17 +141,6 @@ export function Collapsible(_props: CollapsibleProps) {
         },
       ]
     );
-  }
-
-  function sendUnsuscribeAlerts(value: boolean) {
-    setRealtimeAlertsEnabled(value);
-
-    if (value) {
-      console.log('Subscribe to the socket/backend again');
-      return;
-    }
-
-    console.log('Unsubscribe from the socket / notify backend to stop sending alerts');
   }
 
   return (
@@ -191,48 +179,6 @@ export function Collapsible(_props: CollapsibleProps) {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View
-          style={[
-            styles.statusRail,
-            realtimeAlertsEnabled ? styles.statusRailOn : styles.statusRailOff,
-          ]}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Real-time alerts</Text>
-          <Text style={styles.description}>
-            {realtimeAlertsEnabled
-              ? 'Subscribed. The app can receive alerts from the socket/backend.'
-              : 'Unsubscribed. Real-time alerts are paused.'}
-          </Text>
-        </View>
-
-        <View style={styles.switchContainer}>
-          <Text
-            style={[
-              styles.statusText,
-              realtimeAlertsEnabled ? styles.statusTextOn : styles.statusTextOff,
-            ]}>
-            {realtimeAlertsEnabled ? 'Online' : 'Paused'}
-          </Text>
-          <Switch
-            value={realtimeAlertsEnabled}
-            onValueChange={sendUnsuscribeAlerts}
-            trackColor={{ false: '#2A3034', true: '#16A34A' }}
-            thumbColor={realtimeAlertsEnabled ? '#DCFCE7' : '#F8FAFC'}
-            ios_backgroundColor="#2A3034"
-          />
-        </View>
-      </View>
-
-      {systemNotificationsEnabled && expoPushToken ? (
-        <View style={styles.tokenCard}>
-          <Text style={styles.title}>Generated ExpoPushToken</Text>
-          <Text selectable style={styles.tokenText}>
-            {expoPushToken}
-          </Text>
-        </View>
-      ) : null}
     </ThemedView>
   );
 }
@@ -296,20 +242,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  tokenCard: {
-    backgroundColor: '#101415',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#243236',
-    padding: 16,
-    gap: 10,
-  },
-  tokenText: {
-    color: '#CBD5E1',
-    fontSize: 13,
-    fontWeight: '400',
-    lineHeight: 18,
   },
   switchContainer: {
     width: 90,
