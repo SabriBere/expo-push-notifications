@@ -90,7 +90,7 @@ export function Collapsible(_props: CollapsibleProps) {
   }
 
   useEffect(() => {
-    restoreExpoPushTokenIfEnabled();
+    void Promise.resolve().then(restoreExpoPushTokenIfEnabled);
 
     const subscription = AppState.addEventListener('change', async (nextState) => {
       if (appState.current.match(/inactive|background/) && nextState === 'active') {
