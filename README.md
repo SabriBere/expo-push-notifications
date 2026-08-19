@@ -1,9 +1,27 @@
-# TestNotifications
+# Expo push notifications
 
 Mobile application built with Expo and React Native to demonstrate a generic push notification flow and internal deep linking to a demo detail screen.
 
+## Companion project
+
+This mobile application can be used with
+[socket-back](https://github.com/SabriBere/socket-back), a Node.js backend that
+provides HTTP endpoints, WebSocket communication and Expo push-notification
+delivery.
+
+```text
+expo-push-notifications (Expo / React Native)
+              ↕
+      HTTP + WebSocket
+              ↕
+socket-back (Node.js / Express / Prisma)
+              ↓
+       Expo Push Service
+```
+
 ## Table of Contents
 
+- [Companion project](#companion-project)
 - [Project Goal](#project-goal)
 - [Current Scope](#current-scope)
 - [Project Stack](#project-stack)
@@ -128,7 +146,7 @@ EXPO_PUBLIC_API_URL=<backend-base-url>
 
 ```bash
 git clone <repository-url>
-cd TestNotifications
+cd expo-push-notifications
 ```
 
 ### 2. Install dependencies
