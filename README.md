@@ -5,7 +5,7 @@ Mobile application built with Expo and React Native to demonstrate a generic pus
 ## Companion project
 
 This mobile application can be used with
-[socket-back](https://github.com/SabriBere/socket-back), a Node.js backend that
+[expo-notifications-api](https://github.com/SabriBere/expo-notifications-api), a Node.js backend that
 provides HTTP endpoints and Expo push-notification
 delivery.
 
@@ -14,7 +14,7 @@ expo-push-notifications (Expo / React Native)
               ↕
              HTTP
               ↕
-socket-back (Node.js / Express / Prisma)
+expo-notifications-api (Node.js / Express / Prisma)
               ↓
        Expo Push Service
 ```
@@ -37,7 +37,6 @@ socket-back (Node.js / Express / Prisma)
 - [Architecture](#architecture)
 - [Notification Flow](#notification-flow)
 - [Formatting Configuration](#formatting-configuration)
-- [Notes and Pending Items](#notes-and-pending-items)
 - [License](#license)
 
 ## Project Goal
@@ -490,9 +489,9 @@ domain-specific or user-identifying fields:
 
 ```json
 {
-  "itemId": 101,
-  "contextId": 1001,
-  "url": "/demo-items/101"
+    "itemId": 101,
+    "contextId": 1001,
+    "url": "/demo-items/101"
 }
 ```
 
@@ -500,13 +499,13 @@ Demo items returned by `GET /notifications` use the following model:
 
 ```ts
 type DemoNotification = {
-  itemId: number;
-  contextId: number;
-  title: string;
-  sourceType: string;
-  source: string;
-  category: string;
-  link: string;
+    itemId: number;
+    contextId: number;
+    title: string;
+    sourceType: string;
+    source: string;
+    category: string;
+    link: string;
 };
 ```
 
@@ -520,12 +519,6 @@ The project includes basic code quality tools:
 - **Prettier:** configured in `.prettierrc`
 
 It is recommended to run `npm run lint` before pushing changes.
-
-## Notes and Pending Items
-
-There are a few important points to keep in mind about the current state of the project:
-
-- The original Expo README was replaced with this project-specific documentation.
 
 ## License
 
