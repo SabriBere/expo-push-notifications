@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const NEWS_CATEGORY_ID = "news-actions";
+const DEMO_NOTIFICATION_CATEGORY_ID = "demo-notification-actions";
 const ACTION_MARK_AS_READ = "mark-as-read";
 
 async function ensureNotificationPermissions() {
@@ -49,23 +49,15 @@ async function ensureNotificationPermissions() {
   return true;
 }
 
-//crear categoria
 export async function registerNotificationActions() {
-  await Notifications.setNotificationCategoryAsync(NEWS_CATEGORY_ID, [
+  await Notifications.setNotificationCategoryAsync(DEMO_NOTIFICATION_CATEGORY_ID, [
     {
       identifier: ACTION_MARK_AS_READ,
-      buttonTitle: "Marcar como leído",
+      buttonTitle: "Mark as read",
       options: {
         opensAppToForeground: false,
       },
     },
-    // {
-    //   identifier: "open-news",
-    //   buttonTitle: "Abrir noticia",
-    //   options: {
-    //     opensAppToForeground: true,
-    //   },
-    // },
   ]);
 }
 
@@ -101,38 +93,16 @@ export async function registerForPushNotificationsAsync() {
   return token.data;
 }
 
-//función de marcar como leido
 export function listenNotificationActions() {
   return Notifications.addNotificationResponseReceivedListener(async (response) => {
     const actionId = response.actionIdentifier;
     const data = response.notification.request.content.data as DemoNotificationData;
-    console.log("JSON recibido en la notificación:", JSON.stringify(data, null, 2));
-    const url = data.url ?? `/demo-items/${data.itemId}`;
-
-    // Acción custom: marcar como leído
     if (actionId === ACTION_MARK_AS_READ) {
-      console.log("Marcar como leído:", {
+      console.info("Notification marked as read", {
         itemId: data.itemId,
         contextId: data.contextId,
       });
-
-      // Acá podés:
-      // 1) llamar a tu backend
-      // 2) actualizar react-query / redux
-      // 3) persistir en storage
-      return;
     }
-
-    // Tap normal sobre la notificación
-    // if (actionId === Notifications.DEFAULT_ACTION_IDENTIFIER) {
-    //   console.log("Abrir noticia:", data);
-    //   router.push({
-    //     pathname: url,
-    //     params: {
-    //       consultasId: consultasId,
-    //     },
-    //   })
-    // }
   });
 }
 
@@ -175,7 +145,7 @@ export async function triggerPushNotifications(
         title: `${icon} ${notif.source}`,
         subtitle: `${icon} ${notif.source} ${notif.category}`,
         body: notificationDetails,
-        categoryIdentifier: NEWS_CATEGORY_ID,
+        categoryIdentifier: DEMO_NOTIFICATION_CATEGORY_ID,
         data: {
           url,
           itemId: notif.itemId,

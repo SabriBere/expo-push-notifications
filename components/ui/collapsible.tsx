@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { useExpoPushToken } from '@/contexts/PushTokenContext';
+import { useNotificationSocket } from '@/hooks/use-notification-socket';
 import { registerForPushNotificationsAsync } from '@/utils/NotificationsUtils';
 import * as Notifications from 'expo-notifications';
 import React, { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -31,7 +32,8 @@ type CollapsibleProps = {
 export function Collapsible(_props: CollapsibleProps) {
   const [systemNotificationsEnabled, setSystemNotificationsEnabled] = useState(false);
   const [realtimeAlertsEnabled, setRealtimeAlertsEnabled] = useState(true);
-  const { expoPushToken, setExpoPushToken } = useExpoPushToken();
+  useNotificationSocket(realtimeAlertsEnabled);
+  const { setExpoPushToken } = useExpoPushToken();
   const appState = useRef(AppState.currentState);
 
   async function checkSystemPermissions() {
@@ -81,7 +83,7 @@ export function Collapsible(_props: CollapsibleProps) {
       const token = await registerForPushNotificationsAsync();
       if (token) {
         setExpoPushToken(token);
-        console.log("Expo push token restored:", token);
+        console.info('Expo push token restored');
         await syncExpoPushTokenWithBackend(token);
       }
     } catch (error) {
@@ -118,7 +120,7 @@ export function Collapsible(_props: CollapsibleProps) {
 
       setExpoPushToken(token);
       setSystemNotificationsEnabled(true);
-      console.log("Expo push token:", token);
+      console.info('Expo push token generated');
       await syncExpoPushTokenWithBackend(token);
     } catch (error) {
       console.error("Error registering Expo push token", error);
@@ -146,13 +148,6 @@ export function Collapsible(_props: CollapsibleProps) {
 
   function sendUnsuscribeAlerts(value: boolean) {
     setRealtimeAlertsEnabled(value);
-
-    if (value) {
-      console.log('Subscribe to the socket/backend again');
-      return;
-    }
-
-    console.log('Unsubscribe from the socket / notify backend to stop sending alerts');
   }
 
   return (
@@ -225,14 +220,6 @@ export function Collapsible(_props: CollapsibleProps) {
         </View>
       </View>
 
-      {systemNotificationsEnabled && expoPushToken ? (
-        <View style={styles.tokenCard}>
-          <Text style={styles.title}>Generated ExpoPushToken</Text>
-          <Text selectable style={styles.tokenText}>
-            {expoPushToken}
-          </Text>
-        </View>
-      ) : null}
     </ThemedView>
   );
 }
@@ -296,20 +283,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  tokenCard: {
-    backgroundColor: '#101415',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#243236',
-    padding: 16,
-    gap: 10,
-  },
-  tokenText: {
-    color: '#CBD5E1',
-    fontSize: 13,
-    fontWeight: '400',
-    lineHeight: 18,
   },
   switchContainer: {
     width: 90,
