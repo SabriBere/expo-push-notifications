@@ -510,7 +510,6 @@ It is recommended to run `npm run lint` before pushing changes.
 There are a few important points to keep in mind about the current state of the project:
 
 - The original Expo README was replaced with this project-specific documentation.
-- There are no testing scripts defined yet in `package.json`.
 
 ## License
 
