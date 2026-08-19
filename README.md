@@ -107,6 +107,10 @@ For a basic local start, no environment variables are required. Expo falls back 
 the Expo owner. Configure the real values before using EAS builds, native push
 credentials, or the backend-dependent screens.
 
+Project-specific EAS metadata is intentionally not hardcoded in the repository.
+Set `EXPO_PUBLIC_EAS_PROJECT_ID` in the local `.env` file and in each EAS
+environment used for remote builds or workflows.
+
 Example:
 
 ```env

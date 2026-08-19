@@ -59,12 +59,6 @@ function useNotificationObserver() {
       void Notifications.clearLastNotificationResponseAsync();
     }
 
-    const notificationSubscription = Notifications.addNotificationReceivedListener((notification) => {
-      const data = notification.request.content.data;
-      // console.log("JSON recibido con la app abierta:", JSON.stringify(data, null, 2));
-      // console.log("Notificación completa recibida:", JSON.stringify(notification, null, 2));
-    });
-
     const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
       handleNotificationResponse(response);
     });
@@ -77,7 +71,6 @@ function useNotificationObserver() {
     });
 
     return () => {
-      notificationSubscription.remove();
       responseSubscription.remove();
     };
   }, []);
