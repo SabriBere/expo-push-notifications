@@ -5,7 +5,7 @@ Mobile application built with Expo and React Native to demonstrate a generic pus
 ## Companion project
 
 This mobile application can be used with
-[socket-back](https://github.com/SabriBere/socket-back), a Node.js backend that
+[expo-notifications-api](https://github.com/SabriBere/expo-notifications-api), a Node.js backend that
 provides HTTP endpoints and Expo push-notification
 delivery.
 
@@ -14,7 +14,7 @@ expo-push-notifications (Expo / React Native)
               ↕
              HTTP
               ↕
-socket-back (Node.js / Express / Prisma)
+expo-notifications-api (Node.js / Express / Prisma)
               ↓
        Expo Push Service
 ```
@@ -37,7 +37,6 @@ socket-back (Node.js / Express / Prisma)
 - [Architecture](#architecture)
 - [Notification Flow](#notification-flow)
 - [Formatting Configuration](#formatting-configuration)
-- [Notes and Pending Items](#notes-and-pending-items)
 - [License](#license)
 
 ## Project Goal
@@ -76,7 +75,7 @@ The current stack used in the project is:
 
 Relevant versions currently defined in the project:
 
-- `expo`: `^57.0.9`
+- `expo`: `~57.0.15`
 - `react`: `19.2.3`
 - `react-native`: `0.86.2`
 - `typescript`: `~6.0.3`
@@ -145,7 +144,7 @@ EXPO_PUBLIC_API_URL=<backend-base-url>
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/SabriBere/expo-push-notifications.git
 cd expo-push-notifications
 ```
 
@@ -157,7 +156,16 @@ npm install
 
 ### 3. Configure environment variables
 
-Create a `.env` file based on `.env.example` and fill in the values for your environment.
+Create a `.env` file from the safe local template:
+
+```bash
+cp .env.example .env
+```
+
+The default backend URL works for Expo Web, the iOS simulator, and Android
+devices using `adb reverse`. Update it as described below for an Android
+emulator or a physical device connected through Wi-Fi. EAS and native signing
+variables are optional for local development.
 
 ### 4. Start the application
 
@@ -490,9 +498,9 @@ domain-specific or user-identifying fields:
 
 ```json
 {
-  "itemId": 101,
-  "contextId": 1001,
-  "url": "/demo-items/101"
+    "itemId": 101,
+    "contextId": 1001,
+    "url": "/demo-items/101"
 }
 ```
 
@@ -500,13 +508,13 @@ Demo items returned by `GET /notifications` use the following model:
 
 ```ts
 type DemoNotification = {
-  itemId: number;
-  contextId: number;
-  title: string;
-  sourceType: string;
-  source: string;
-  category: string;
-  link: string;
+    itemId: number;
+    contextId: number;
+    title: string;
+    sourceType: string;
+    source: string;
+    category: string;
+    link: string;
 };
 ```
 
@@ -520,12 +528,6 @@ The project includes basic code quality tools:
 - **Prettier:** configured in `.prettierrc`
 
 It is recommended to run `npm run lint` before pushing changes.
-
-## Notes and Pending Items
-
-There are a few important points to keep in mind about the current state of the project:
-
-- The original Expo README was replaced with this project-specific documentation.
 
 ## License
 
