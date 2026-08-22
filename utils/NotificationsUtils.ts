@@ -50,6 +50,8 @@ async function ensureNotificationPermissions() {
 }
 
 export async function registerNotificationActions() {
+  if (Platform.OS === "web") return;
+
   await Notifications.setNotificationCategoryAsync(DEMO_NOTIFICATION_CATEGORY_ID, [
     {
       identifier: ACTION_MARK_AS_READ,

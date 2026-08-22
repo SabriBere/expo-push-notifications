@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import type { DemoNotificationData } from "@/types/demoNotification";
 import "react-native-reanimated";
@@ -40,7 +41,9 @@ function useNotificationObserver() {
     const handledNotificationId = useRef<string | null>(null);
 
     useEffect(() => {
-        registerNotificationActions();
+        if (Platform.OS === "web") return;
+
+        void registerNotificationActions();
 
         function handleNotificationResponse(
             response: Notifications.NotificationResponse,

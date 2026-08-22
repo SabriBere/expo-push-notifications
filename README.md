@@ -75,7 +75,7 @@ The current stack used in the project is:
 
 Relevant versions currently defined in the project:
 
-- `expo`: `^57.0.9`
+- `expo`: `~57.0.15`
 - `react`: `19.2.3`
 - `react-native`: `0.86.2`
 - `typescript`: `~6.0.3`
@@ -144,7 +144,7 @@ EXPO_PUBLIC_API_URL=<backend-base-url>
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/SabriBere/expo-push-notifications.git
 cd expo-push-notifications
 ```
 
@@ -156,7 +156,16 @@ npm install
 
 ### 3. Configure environment variables
 
-Create a `.env` file based on `.env.example` and fill in the values for your environment.
+Create a `.env` file from the safe local template:
+
+```bash
+cp .env.example .env
+```
+
+The default backend URL works for Expo Web, the iOS simulator, and Android
+devices using `adb reverse`. Update it as described below for an Android
+emulator or a physical device connected through Wi-Fi. EAS and native signing
+variables are optional for local development.
 
 ### 4. Start the application
 
